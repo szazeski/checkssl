@@ -14,9 +14,22 @@ openresty - PHP/7.4.4
 [PASS] ★★★
 ```
 
-If the certificate is not valid, a non zero return code will be sent. 
+If the certificate is not valid, a non zero exit code will be returned to stop a ci build. 
 ```
 zazeski.com
  Head "https://zazeski.com": x509: certificate signed by unknown authority
 [FAIL]
 ```
+
+## Installation
+
+On 64-bit linux systems, you can run
+`wget https://github.com/szazeski/checkssl/releases/download/v0.1/checkssl-linux-amd64 && chmod +x checkssl-linux-amd64 && sudo mv checkssl-linux-amd64 /usr/bin/checkssl`
+(will ask for a sudo password to move it into the system-wide bin folder, switch it to a local path if you don't want to do that)
+
+On mac, open terminal
+`curl -O -L https://github.com/szazeski/checkssl/releases/download/v0.1/checkssl-macos && chmod +x checkssl-macos`
+Since the app is not signed, you should open it here by right clicking on it and clicking open to tell Gatekeeper that you approve running it.
+`mv checkssl-macos /usr/local/bin/checkssl`
+
+On windows
