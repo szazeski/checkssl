@@ -9,16 +9,22 @@ command line tool to check if a webserver has its https certificates correctly s
 steve.zazeski.com
 openresty - PHP/7.4.4
  1) steve.zazeski.com expires on 2020-11-07 2:58PM Sat (58.6 days)
- 2) -CA- Let's Encrypt Authority X3 expires on 2021-03-17 4:40PM Wed (188.6 days)
- 3) -CA- DST Root CA X3 expires on 2021-09-30 2:01PM Thu (385.5 days)
-[PASS] ★★★
+ CA-2) Let's Encrypt Authority X3 expires on 2021-03-17 4:40PM Wed (188.6 days)
+ CA-3) DST Root CA X3 expires on 2021-09-30 2:01PM Thu (385.5 days)
+[PASS] https://steve.zazeski.com
 ```
 
 If the certificate is not valid, a non-zero exit code will be returned to stop a ci build. 
 ```
 zazeski.com
- Head "https://zazeski.com": x509: certificate signed by unknown authority
-[FAIL]
+ certificate signed by unknown authority
+[FAIL] zazeski.com
+```
+
+```
+ebay.com
+ stopped after 10 redirects
+[FAIL] https://ebay.com
 ```
 
 ### Parameters
