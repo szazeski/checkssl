@@ -14,12 +14,22 @@ openresty - PHP/7.4.4
 [PASS] ★★★
 ```
 
-If the certificate is not valid, a non zero exit code will be returned to stop a ci build. 
+If the certificate is not valid, a non-zero exit code will be returned to stop a ci build. 
 ```
 zazeski.com
  Head "https://zazeski.com": x509: certificate signed by unknown authority
 [FAIL]
 ```
+
+### Parameters
+`-days=60` allows you to specify a threshold of when checkssl should error to allow CI jobs to fail if the certs are about to expire in a few days.
+
+### Return Codes
+`0` All certificates passed
+
+`2` Certificate(s) expired
+
+`3` User specified threshold failed 
 
 ## Installation
 
