@@ -1,6 +1,7 @@
 # checkssl
+command line tool to check if a webserver has a valid https certificate.
 
-command line tool to check if a webserver has its https certificates correctly setup.
+https://www.checkssl.org/
 
 ## Example
 
