@@ -15,3 +15,8 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+/checkssl.exe
+/checkssl-*
+lambda/main.zip
+lambda/main

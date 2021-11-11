@@ -1,0 +1,8 @@
+# Since this is being built on a windows machine we first need to get this package
+set GOOS=windows
+go get -u github.com/aws/aws-lambda-go/cmd/build-lambda-zip
+
+# AWS lambda is ran on linux, so we switch to that to do the build
+set GOOS=linux
+go build -o main main.go
+%GOPATH%\bin\build-lambda-zip -output main.zip main
