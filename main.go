@@ -1,7 +1,7 @@
 package main
 
 import (
-	"checkssl/lib/checkssl"
+	"github.com/szazeski/checkssl/lib/checkssl"
 	"fmt"
 	"os"
 	"strconv"
