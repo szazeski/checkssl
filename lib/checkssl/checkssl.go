@@ -106,12 +106,13 @@ func displayDate(input time.Time) string {
 }
 
 func (a CheckedServer) AsString() (output string) {
-	output += fmt.Sprintf("\n%s\n", a.ServerName)
+	if a.ServerName != "" {
+		output += fmt.Sprintf("\n%s\n", a.ServerName)
 
-	output += fmt.Sprintf(" -> %s\n", expandServerNames(a.ServerInfo))
-	output += fmt.Sprintf(" -> %s with %s\n", getHttpVersion(a.HttpVersion), getTlsVersion(a.TlsVersion))
-	output += fmt.Sprintf(" -> %s %s\n", getTlsAlgo(a.TlsAlgorithm), getMozillaRecommendedCipher(a.TlsAlgorithm))
-
+		output += fmt.Sprintf(" -> %s\n", expandServerNames(a.ServerInfo))
+		output += fmt.Sprintf(" -> %s with %s\n", getHttpVersion(a.HttpVersion), getTlsVersion(a.TlsVersion))
+		output += fmt.Sprintf(" -> %s %s\n", getTlsAlgo(a.TlsAlgorithm), getMozillaRecommendedCipher(a.TlsAlgorithm))
+	}
 	for i, cert := range a.Certs {
 
 		if cert.IsCertificateAuthority {
@@ -131,7 +132,7 @@ func (a CheckedServer) AsString() (output string) {
 	if a.Passed {
 		output += fmt.Sprintf("[PASS] %s\n", a.Target)
 	} else {
-		output += fmt.Sprintf(" %v\n", a.Err)
+		output += fmt.Sprintf("%s %v\n", a.Target, a.Err)
 		output += fmt.Sprintf("[FAIL] %s\n", a.Target)
 	}
 
