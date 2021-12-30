@@ -8,11 +8,14 @@ https://www.checkssl.org/
 `checkssl steve.zazeski.com`
 ```
 steve.zazeski.com
-openresty - PHP/7.4.4
- 1) steve.zazeski.com expires on 2020-11-07 2:58PM Sat (58.6 days)
- CA-2) Let's Encrypt Authority X3 expires on 2021-03-17 4:40PM Wed (188.6 days)
- CA-3) DST Root CA X3 expires on 2021-09-30 2:01PM Thu (385.5 days)
+ -> openresty - 
+ -> HTTP/2 with TLS v1.3 (released 2018) - latest version
+ -> TLS_AES_128_GCM_SHA256 = TLS, message encrypted with AES128 GCM, hashes are SHA256 
+ 1) steve.zazeski.com expires on 2022-02-13 12:32AM Sun (44.8 days)
+ CA-2) R3 expires on 2025-09-15 4:00PM Mon (1355.5 days)
+ CA-3) ISRG Root X1 expires on 2035-06-04 11:04AM Mon (4904.3 days)
 [PASS] https://steve.zazeski.com
+
 ```
 
 If the certificate is not valid, a non-zero exit code will be returned to stop a ci build. 
