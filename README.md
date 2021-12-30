@@ -34,6 +34,8 @@ ebay.com
 ### Parameters
 `-days=60` allows you to specify a threshold of when checkssl should error to allow CI jobs to fail if the certs are about to expire in a few days.
 
+`-json` will switch the text output from human readable to JSON format for easier parsing with other systems.
+
 ### Return Codes
 `0` All certificates passed
 
