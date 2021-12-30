@@ -18,5 +18,6 @@
 
 /checkssl.exe
 /checkssl-*
+/checkssl
 lambda/main.zip
 lambda/main

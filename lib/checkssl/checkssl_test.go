@@ -25,7 +25,7 @@ func Test_CheckServer_checksslorg(t *testing.T) {
 }
 
 func Test_Display(t *testing.T) {
-	date := time.Now().Add(-48*time.Hour)
+	date := time.Now().Add(-48 * time.Hour)
 	actual := displayDate(date)
 	if strings.Contains(actual, " (-2.0 days)") == false {
 		t.Log(actual)
@@ -33,8 +33,8 @@ func Test_Display(t *testing.T) {
 	}
 }
 
-func assert(t *testing.T, actual string, expected string, failureHint string){
-	if(actual != expected){
+func assert(t *testing.T, actual string, expected string, failureHint string) {
+	if actual != expected {
 		t.Log("ACTUAL = ", actual)
 		t.Log("EXPECT = ", expected)
 		t.Fatal("[FAILED]", failureHint)
