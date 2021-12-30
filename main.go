@@ -1,19 +1,21 @@
 package main
 
 import (
-	"github.com/szazeski/checkssl/lib/checkssl"
 	"fmt"
+	"github.com/szazeski/checkssl/lib/checkssl"
 	"os"
 	"strconv"
 	"strings"
 	"time"
 )
+
 const VERSION = "0.3" // 09/26/2021
-const FLAG_DAYS= "-days="
-const FLAG_JSON= "-json"
+const FLAG_DAYS = "-days="
+const FLAG_JSON = "-json"
 
 var returnCode = 0
 var dateThreshold time.Time
+var outputAsJson = false
 
 func main() {
 	arguments := separateCommandLineArgumentsFromFlags()
@@ -24,7 +26,11 @@ func main() {
 	for i := range arguments {
 		result := checkssl.CheckServer(arguments[i], dateThreshold)
 		returnCode += result.ExitCode
-		fmt.Println(result.AsString())
+		if outputAsJson {
+			fmt.Println(result.AsJson())
+		} else {
+			fmt.Println(result.AsString())
+		}
 	}
 	os.Exit(returnCode)
 }
@@ -42,14 +48,14 @@ func separateCommandLineArgumentsFromFlags() []string {
 		if strings.HasPrefix(value, "-") {
 			if strings.HasPrefix(value, FLAG_DAYS) {
 				parsableDays := strings.Replace(value, FLAG_DAYS, "", 1)
-				parsedDays,_ := strconv.ParseInt(parsableDays,10, 32)
+				parsedDays, _ := strconv.ParseInt(parsableDays, 10, 32)
 				daysThreshold := int(parsedDays)
 
-				offset, _ := time.ParseDuration(strconv.Itoa(daysThreshold * 24) + "h")
+				offset, _ := time.ParseDuration(strconv.Itoa(daysThreshold*24) + "h")
 				dateThreshold = time.Now().Add(offset)
 			}
-			if strings.HasPrefix(value, FLAG_JSON){
-
+			if strings.HasPrefix(value, FLAG_JSON) {
+				outputAsJson = true
 			}
 			continue
 			// this allows flags to be mixed into the arguments
