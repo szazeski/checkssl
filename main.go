@@ -2,16 +2,18 @@ package main
 
 import (
 	"fmt"
-	"github.com/szazeski/checkssl/lib/checkssl"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/szazeski/checkssl/lib/checkssl"
 )
 
-const VERSION = "0.3" // 09/26/2021
+const VERSION = "0.3" // 12/31/2021
 const FLAG_DAYS = "-days="
 const FLAG_JSON = "-json"
+const FLAG_NO_COLOR = "-no-color"
 
 var returnCode = 0
 var dateThreshold time.Time
@@ -47,6 +49,7 @@ func separateCommandLineArgumentsFromFlags() []string {
 			continue
 		}
 		if strings.HasPrefix(value, "-") {
+			value = strings.Replace(value, "--", "-", 1)
 			if strings.HasPrefix(value, FLAG_DAYS) {
 				parsableDays := strings.Replace(value, FLAG_DAYS, "", 1)
 				parsedDays, _ := strconv.ParseInt(parsableDays, 10, 32)
@@ -57,6 +60,9 @@ func separateCommandLineArgumentsFromFlags() []string {
 			}
 			if strings.HasPrefix(value, FLAG_JSON) {
 				outputAsJson = true
+			}
+			if strings.HasPrefix(value, FLAG_NO_COLOR) {
+				enableTerminalColor = false
 			}
 			continue
 			// this allows flags to be mixed into the arguments
