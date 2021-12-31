@@ -105,7 +105,9 @@ func displayDate(input time.Time) string {
 	return input.Format("2006-01-02 3:04PM Mon") + " (" + numberOfDays + " days)"
 }
 
-func (a CheckedServer) AsString() (output string) {
+func (a CheckedServer) AsString(enableColors bool) (output string) {
+	setTerminalColor(enableColors)
+
 	if a.ServerName != "" {
 		output += fmt.Sprintf("\n%s\n", a.ServerName)
 
@@ -130,10 +132,10 @@ func (a CheckedServer) AsString() (output string) {
 	}
 
 	if a.Passed {
-		output += fmt.Sprintf("[PASS] %s\n", a.Target)
+		output += fmt.Sprintf("%s[PASS]%s %s\n", terminalGreen, terminalNoColor, a.Target)
 	} else {
 		output += fmt.Sprintf("%s %v\n", a.Target, a.Err)
-		output += fmt.Sprintf("[FAIL] %s\n", a.Target)
+		output += fmt.Sprintf("%s[FAIL]%s %s\n", terminalRed, terminalNoColor, a.Target)
 	}
 
 	return
@@ -147,18 +149,37 @@ func (a CheckedServer) AsJson() string {
 	return string(jsonBytes)
 }
 
+var terminalNoColor = ""
+var terminalRed = ""
+var terminalYellow = ""
+var terminalGreen = ""
+
+func setTerminalColor(enable bool) {
+	if enable {
+		terminalNoColor = "\033[0m"
+		terminalRed = "\033[31m"
+		terminalYellow = "\033[0;33m"
+		terminalGreen = "\033[0;32m"
+	} else {
+		terminalNoColor = ""
+		terminalRed = ""
+		terminalYellow = ""
+		terminalGreen = ""
+	}
+}
+
 func getTlsVersion(input uint16) string {
 	switch input {
 	case tls.VersionSSL30:
-		return "SSL v3.0 () - PLEASE UPGRADE to TLS v1.2"
+		return terminalRed + "SSL v3.0 () - PLEASE UPGRADE to TLS v1.2" + terminalNoColor
 	case tls.VersionTLS10:
-		return "TLS v1.0 (released 1999) - PLEASE UPGRADE to TLS v1.2 or v1.3"
+		return terminalRed + "TLS v1.0 (released 1999) - PLEASE UPGRADE to TLS v1.2 or v1.3" + terminalNoColor
 	case tls.VersionTLS11:
-		return "TLS v1.1 (release 2006) - PLEASE UPGRADE to TLS v1.2 or v1.3"
+		return terminalRed + "TLS v1.1 (release 2006) - PLEASE UPGRADE to TLS v1.2 or v1.3" + terminalNoColor
 	case tls.VersionTLS12:
-		return "TLS v1.2 (released 2008) - Consider upgrading to TLS v1.3"
+		return terminalYellow + "TLS v1.2 (released 2008) - Consider upgrading to TLS v1.3" + terminalNoColor
 	case tls.VersionTLS13:
-		return "TLS v1.3 (released 2018) - latest version"
+		return terminalGreen + "TLS v1.3 (released 2018) - latest version" + terminalNoColor
 	}
 
 	return fmt.Sprintf("unknown TLS version: %d", input)
@@ -180,7 +201,7 @@ func getMozillaRecommendedCipher(input uint16) string {
 		input == tls.TLS_RSA_WITH_AES_256_GCM_SHA384 ||
 		input == tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305 ||
 		input == tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305 {
-		return " (Mozilla Recommended Cipher)"
+		return terminalGreen + " (Mozilla Recommended Cipher)" + terminalNoColor
 	}
 	return "" // not insecure, but consider upgrading
 }
@@ -205,17 +226,16 @@ func getTlsAlgo(input uint16) string {
 }
 
 func getHttpVersion(input string) string {
-	colorReset := "\033[0m"
-	colorRed := "\033[31m"
+
 	switch input {
 	case "h3":
 		return "HTTP/3" // currently, go cannot do http3 natively
 	case "h2":
-		return "HTTP/2"
+		return terminalGreen + "HTTP/2" + terminalNoColor
 	case "http/1.1":
-		return colorRed + "HTTP/1.1 (OLD)" + colorReset
+		return terminalRed + "HTTP/1.1 (OLD)" + terminalNoColor
 	case "http/1":
-		return colorRed + "HTTP/1 (OLD)" + colorReset
+		return terminalRed + "HTTP/1 (OLD)" + terminalNoColor
 	}
 	return fmt.Sprintf("unknown HTTPS version: %s", input)
 

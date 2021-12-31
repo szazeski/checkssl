@@ -16,6 +16,7 @@ const FLAG_JSON = "-json"
 var returnCode = 0
 var dateThreshold time.Time
 var outputAsJson = false
+var enableTerminalColor = true
 
 func main() {
 	arguments := separateCommandLineArgumentsFromFlags()
@@ -29,7 +30,7 @@ func main() {
 		if outputAsJson {
 			fmt.Println(result.AsJson())
 		} else {
-			fmt.Println(result.AsString())
+			fmt.Println(result.AsString(enableTerminalColor))
 		}
 	}
 	os.Exit(returnCode)
