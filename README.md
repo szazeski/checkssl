@@ -1,6 +1,8 @@
 # checkssl
 command line tool to check if a webserver has a valid https certificate.
 
+[![Go](https://github.com/szazeski/checkssl/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/szazeski/checkssl/actions/workflows/go.yml)
+
 https://www.checkssl.org/
 
 ## Example
