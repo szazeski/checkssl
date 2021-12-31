@@ -73,6 +73,9 @@ func CheckServer(target string, dateNeededValidFor time.Time) (output CheckedSer
 			commonName = "(missing common name)"
 		}
 		certInfo.CommonName = commonName
+		if output.ServerName == "" {
+			output.ServerName = commonName
+		}
 
 		newCode := checkIfExpirationIsWithinTolerance(dateNeededValidFor, val.NotBefore, val.NotAfter)
 		if newCode > RETURNCODE_PASS {
