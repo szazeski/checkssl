@@ -52,14 +52,14 @@ ebay.com
 ## Installation
 
 On 64-bit linux systems, you can run
-`wget https://github.com/szazeski/checkssl/releases/download/v0.2/checkssl-linux-amd64 && chmod +x checkssl-linux-amd64 && sudo mv checkssl-linux-amd64 /usr/bin/checkssl`
+`wget https://github.com/szazeski/checkssl/releases/download/v0.3/checkssl-linux-amd64 && chmod +x checkssl-linux-amd64 && sudo mv checkssl-linux-amd64 /usr/bin/checkssl`
 (will ask for a sudo password to move it into the system-wide bin folder, switch it to a local path if you don't want to do that)
 
 On mac, open terminal
-`curl -O -L https://github.com/szazeski/checkssl/releases/download/v0.2/checkssl-macos && chmod +x checkssl-macos`
+`curl -O -L https://github.com/szazeski/checkssl/releases/download/v0.3/checkssl-macos && chmod +x checkssl-macos`
 Since the app is not signed, you should open it here by right clicking on it and clicking open to tell Gatekeeper that you approve running it.
 `mv checkssl-macos /usr/local/bin/checkssl`
 
 On windows (powershell)
-`wget https://github.com/szazeski/checkssl/releases/download/v0.2/checkssl-windows-amd64.exe -outfile checkssl.exe`
+`wget https://github.com/szazeski/checkssl/releases/download/v0.3/checkssl-windows-amd64.exe -outfile checkssl.exe`
 then move to C:\Windows\checkssl.exe
