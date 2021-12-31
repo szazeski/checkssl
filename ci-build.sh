@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # from https://www.digitalocean.com/community/tutorials/how-to-build-go-executables-for-multiple-platforms-on-ubuntu-16-04
 
-package="checkssl"
+package="github.com/szazeski/checkssl"
 package_split=(${package//\// })
 package_name=${package_split[-1]}
 
-platforms=("windows/amd64" "windows/386" "windows/arm" "darwin/amd64" "linux/amd64" "linux/386" "linux/arm64" "linux/arm")
+platforms=("windows/amd64" "windows/386" "windows/arm" "darwin/amd64" "darwin/arm64" "linux/amd64" "linux/386" "linux/arm64" "linux/arm")
 
 #  go tool dist list | column -c 75 | column -t
 #aix/ppc64        freebsd/amd64   linux/mipsle   openbsd/386
