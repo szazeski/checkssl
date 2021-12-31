@@ -10,7 +10,8 @@ import (
 	"github.com/szazeski/checkssl/lib/checkssl"
 )
 
-const VERSION = "0.3" // 12/31/2021
+const VERSION = "0.3"
+const BUILD_DATE = "12/31/2021"
 const FLAG_DAYS = "-days="
 const FLAG_JSON = "-json"
 const FLAG_NO_COLOR = "-no-color"
@@ -80,7 +81,8 @@ func displayHelpText(errorText string) {
 
 	fmt.Println("checkssl [url] ")
 	fmt.Println(" easy to read/parse information about ssl certificates")
-	fmt.Println(" version " + VERSION)
+	fmt.Println(" version " + VERSION + " built " + BUILD_DATE)
 	fmt.Println("  -days=5 (will fail the check if the cert is within 5 days of renewal)")
 	fmt.Println("  -json (will output in JSON format)")
+	fmt.Println("  -no-color (will disable color syntax from output)")
 }

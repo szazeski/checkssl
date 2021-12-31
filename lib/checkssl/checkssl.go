@@ -108,7 +108,7 @@ func displayDate(input time.Time) string {
 func (a CheckedServer) AsString(enableColors bool) (output string) {
 	setTerminalColor(enableColors)
 
-	if a.ServerName != "" {
+	if a.Err == "" {
 		output += fmt.Sprintf("\n%s\n", a.ServerName)
 
 		output += fmt.Sprintf(" -> %s\n", expandServerNames(a.ServerInfo))
