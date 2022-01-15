@@ -17,10 +17,10 @@ jobs:
         uses: actions/setup-go@v1
         with:
           go-version: 1.15
-      - name: Build binary
+      - name: Build lambda binary
         run: |
           cd lambda && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -a -o main main.go && zip deployment.zip main
-      - name: default deploy
+      - name: update lambda
         uses: appleboy/lambda-action@master
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -29,5 +29,4 @@ jobs:
           function_name: checkssl
           zip_file: lambda/deployment.zip
           memory_size: 128
-          timeout: 10
-          handler: Handler
+          handler: main
