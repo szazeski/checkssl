@@ -1,4 +1,4 @@
-name: Go
+name: Deploy Lambda
 
 on:
   push:
@@ -8,26 +8,27 @@ on:
 
 jobs:
 
-  build:
+  deploy_zip:
+    name: deploy lambda function
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.17
-        
-    - name: Load Lambda Toolkit
-      run: go get -u github.com/aws/aws-lambda-go/cmd/build-lambda-zip
-
-    - name: Build Lambda Function
-      run: go build -o main lambda/main.go
-      
-    - name: Upload Build Artifact
-      uses: actions/upload-artifact@v2.3.1
-      with:
-       name: checkssl-lambda
-       path: main
-
-    
+      - name: checkout source code
+        uses: actions/checkout@v1
+      - name: Install Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.15
+      - name: Build binary
+        run: |
+          cd lambda && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -a -o main main.go && zip deployment.zip main
+      - name: default deploy
+        uses: appleboy/lambda-action@master
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: us-east-2
+          function_name: checkssl
+          zip_file: lambda/deployment.zip
+          memory_size: 128
+          timeout: 10
+          handler: foobar
