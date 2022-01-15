@@ -1,4 +1,4 @@
-name: Go
+name: Build and Test Go
 
 on:
   push:
@@ -23,3 +23,8 @@ jobs:
 
     - name: Test
       run: go test -v ./...
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: built-assets
+        path: main
