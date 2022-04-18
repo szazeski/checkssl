@@ -24,6 +24,34 @@ func Test_CheckServer_checksslorg(t *testing.T) {
 	assert(t, actual.Err, "", "")
 }
 
+func Test_CheckServer_expired(t *testing.T) {
+	testFailure(t, "https://expired.badssl.com/")
+}
+func Test_CheckServer_wrongHost(t *testing.T) {
+	testFailure(t, "https://wrong.host.badssl.com/")
+}
+func Test_CheckServer_selfSigned(t *testing.T) {
+	testFailure(t, "https://self-signed.badssl.com/")
+}
+func Test_CheckServer_untrustedRoot(t *testing.T) {
+	testFailure(t, "https://untrusted-root.badssl.com/")
+}
+func Test_CheckServer_revoked(t *testing.T) {
+	t.Skipf("This should fail eventually")
+	testFailure(t, "https://revoked.badssl.com/")
+}
+func Test_CheckServer_pinningTest(t *testing.T) {
+	t.Skipf("This should fail eventually")
+	testFailure(t, "https://pinning-test.badssl.com/")
+}
+func testFailure(t *testing.T, target string) {
+	actual := CheckServer(target, time.Now())
+
+	if actual.Passed {
+		t.Fatal("expecting to get a failure reply")
+	}
+}
+
 func Test_Display(t *testing.T) {
 	date := time.Now().Add(-48 * time.Hour)
 	actual := displayDate(date)

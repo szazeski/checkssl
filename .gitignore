@@ -1,4 +1,5 @@
 /.idea/
+/.scannerwork/
 
 # Binaries for programs and plugins
 *.exe
@@ -21,3 +22,5 @@
 /checkssl
 lambda/main.zip
 lambda/main
+
+coverage.out
