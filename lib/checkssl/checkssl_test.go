@@ -7,7 +7,7 @@ import (
 )
 
 func Test_CheckServer_Blank(t *testing.T) {
-	actual := CheckServer("", time.Now())
+	actual := CheckServer("", time.Now(), false)
 
 	if actual.Passed != false {
 		t.Fatal("no target should of produced a failing response")
@@ -16,7 +16,7 @@ func Test_CheckServer_Blank(t *testing.T) {
 }
 
 func Test_CheckServer_checksslorg(t *testing.T) {
-	actual := CheckServer("checkssl.org", time.Now())
+	actual := CheckServer("checkssl.org", time.Now(), false)
 
 	if !actual.Passed {
 		t.Fatal("expecting to get a passing reply")
@@ -45,10 +45,51 @@ func Test_CheckServer_pinningTest(t *testing.T) {
 	testFailure(t, "https://pinning-test.badssl.com/")
 }
 func testFailure(t *testing.T, target string) {
-	actual := CheckServer(target, time.Now())
+	actual := CheckServer(target, time.Now(), false)
 
 	if actual.Passed {
 		t.Fatal("expecting to get a failure reply")
+	}
+}
+
+func Test_checkIfExpirationIsWithinTolerance_Before(t *testing.T) {
+
+	today := time.Now()
+	lastWeek := today.Add(-7 * 24 * time.Hour)
+	nextWeek := today.Add(7 * 24 * time.Hour)
+
+	//      t--X
+	//   |---------|    PASS - 0
+	//  |--|            FAIL - Expired - 2
+	//   |----|         FAIL - Threshold Fail - 3
+	//           |----| FAIL - Not Valid Yet - 4
+
+	// 0
+	actual := checkIfExpirationIsWithinTolerance(today, lastWeek, nextWeek)
+	if actual != RETURNCODE_PASS {
+		t.Log("checkIfExpirationIsWithinTolerance", actual, "but expected", RETURNCODE_PASS)
+		t.Error("Expected to get a passing")
+	}
+
+	// 2
+	actual = checkIfExpirationIsWithinTolerance(today.Add(8*24*time.Hour), lastWeek, nextWeek)
+	if actual != RETURNCODE_THRESHOLDFAIL {
+		t.Log("checkIfExpirationIsWithinTolerance", actual, "but expected", RETURNCODE_THRESHOLDFAIL)
+		t.Error("Expected to get a THRESHOLDFAIL")
+	}
+
+	// 3
+	actual = checkIfExpirationIsWithinTolerance(today, nextWeek, nextWeek)
+	if actual != RETURNCODE_NOTVALIDYET {
+		t.Log("checkIfExpirationIsWithinTolerance", actual, "but expected", RETURNCODE_NOTVALIDYET)
+		t.Error("Expected to get a NOTVALIDYET")
+	}
+
+	// 4
+	actual = checkIfExpirationIsWithinTolerance(today, lastWeek, lastWeek)
+	if actual != RETURNCODE_EXPIRED {
+		t.Log("checkIfExpirationIsWithinTolerance", actual, "but expected", RETURNCODE_EXPIRED)
+		t.Error("Expected to get a RETURNCODE_EXPIRED")
 	}
 }
 

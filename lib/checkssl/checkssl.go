@@ -13,6 +13,7 @@ import (
 const RETURNCODE_PASS = 0
 const RETURNCODE_EXPIRED = 2
 const RETURNCODE_THRESHOLDFAIL = 3
+const RETURNCODE_NOTVALIDYET = 4
 
 type CheckedServer struct {
 	Target       string
@@ -34,7 +35,7 @@ type CheckCert struct {
 	IsInvalid              bool
 }
 
-func CheckServer(target string, dateNeededValidFor time.Time) (output CheckedServer) {
+func CheckServer(target string, dateNeededValidFor time.Time, insecure bool) (output CheckedServer) {
 	target = strings.Replace(target, "http://", "https://", 1)
 	if !strings.HasPrefix(target, "https://") {
 		target = "https://" + target
@@ -43,8 +44,15 @@ func CheckServer(target string, dateNeededValidFor time.Time) (output CheckedSer
 	output.Target = target
 	output.Passed = true
 
-	response, err := http.Head(target)
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure},
+	}
+	client := &http.Client{Transport: tr}
+	response, err := client.Head(target)
 	if err != nil {
+		if insecure == false {
+			output = CheckServer(target, dateNeededValidFor, true)
+		}
 		certError := errors.Unwrap(err)
 		output.Err = certError.Error()
 		output.Passed = false
@@ -62,7 +70,7 @@ func CheckServer(target string, dateNeededValidFor time.Time) (output CheckedSer
 	output.TlsAlgorithm = response.TLS.CipherSuite
 	output.HttpVersion = response.TLS.NegotiatedProtocol
 
-	for _, val := range response.TLS.VerifiedChains[0] {
+	for _, val := range response.TLS.PeerCertificates {
 		certInfo := CheckCert{}
 		certInfo.IsCertificateAuthority = val.IsCA
 		certInfo.ValidNotAfter = val.NotAfter
@@ -91,15 +99,20 @@ func CheckServer(target string, dateNeededValidFor time.Time) (output CheckedSer
 }
 
 func checkIfExpirationIsWithinTolerance(dateThreshold time.Time, notBefore time.Time, notAfter time.Time) int {
-	if dateThreshold.After(notAfter) {
+
+	if dateThreshold.After(notBefore) && dateThreshold.Before(notAfter) {
+		return RETURNCODE_PASS
+	}
+
+	if time.Now().After(notBefore) && time.Now().Before(notAfter) {
 		return RETURNCODE_THRESHOLDFAIL
 	}
 
-	if notBefore.After(time.Now()) {
-		return RETURNCODE_EXPIRED
+	if dateThreshold.Before(notBefore) && dateThreshold.Before(notAfter) {
+		return RETURNCODE_NOTVALIDYET
 	}
 
-	return RETURNCODE_PASS
+	return RETURNCODE_EXPIRED
 }
 
 func displayDate(input time.Time) string {
@@ -111,13 +124,12 @@ func displayDate(input time.Time) string {
 func (a CheckedServer) AsString(enableColors bool) (output string) {
 	setTerminalColor(enableColors)
 
-	if a.Err == "" {
-		output += fmt.Sprintf("\n%s\n", a.ServerName)
+	output += fmt.Sprintf("\n%s\n", a.ServerName)
 
-		output += fmt.Sprintf(" -> %s\n", expandServerNames(a.ServerInfo))
-		output += fmt.Sprintf(" -> %s with %s\n", getHttpVersion(a.HttpVersion), getTlsVersion(a.TlsVersion))
-		output += fmt.Sprintf(" -> %s %s\n", getTlsAlgo(a.TlsAlgorithm), getMozillaRecommendedCipher(a.TlsAlgorithm))
-	}
+	output += fmt.Sprintf(" -> %s\n", expandServerNames(a.ServerInfo))
+	output += fmt.Sprintf(" -> %s with %s\n", getHttpVersion(a.HttpVersion), getTlsVersion(a.TlsVersion))
+	output += fmt.Sprintf(" -> %s %s\n", getTlsAlgo(a.TlsAlgorithm), getMozillaRecommendedCipher(a.TlsAlgorithm))
+
 	for i, cert := range a.Certs {
 
 		if cert.IsCertificateAuthority {
@@ -126,10 +138,10 @@ func (a CheckedServer) AsString(enableColors bool) (output string) {
 			output += fmt.Sprintf(" %d) ", i+1)
 		}
 
-		output += fmt.Sprintf("%s expires on %s", cert.CommonName, displayDate(cert.ValidNotAfter))
-
 		if cert.IsInvalid {
-			output += fmt.Sprintf("\n     ↳ [FAIL] expires in %s", cert.ValidNotAfter.Sub(time.Now()))
+			output += fmt.Sprintf("%s%s expired on %s%s", terminalRed, cert.CommonName, displayDate(cert.ValidNotAfter), terminalNoColor)
+		} else {
+			output += fmt.Sprintf("%s expires on %s", cert.CommonName, displayDate(cert.ValidNotAfter))
 		}
 		output += fmt.Sprintf("\n")
 	}

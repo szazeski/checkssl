@@ -10,8 +10,8 @@ import (
 	"github.com/szazeski/checkssl/lib/checkssl"
 )
 
-const VERSION = "0.3"
-const BUILD_DATE = "12/31/2021"
+const VERSION = "0.4"
+const BUILD_DATE = "2022-June-11"
 const FLAG_DAYS = "-days="
 const FLAG_JSON = "-json"
 const FLAG_NO_COLOR = "-no-color"
@@ -28,7 +28,7 @@ func main() {
 	}
 
 	for i := range arguments {
-		result := checkssl.CheckServer(arguments[i], dateThreshold)
+		result := checkssl.CheckServer(arguments[i], dateThreshold, false)
 		returnCode += result.ExitCode
 		if outputAsJson {
 			fmt.Println(result.AsJson())
@@ -45,6 +45,7 @@ func noTargetsWereGiven(arguments []string) bool {
 
 func separateCommandLineArgumentsFromFlags() []string {
 	var arguments []string
+	dateThreshold = time.Now()
 	for i, value := range os.Args {
 		if i == 0 {
 			continue
