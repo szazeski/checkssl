@@ -10,8 +10,8 @@ import (
 	"github.com/szazeski/checkssl/lib/checkssl"
 )
 
-const VERSION = "0.4"
-const BUILD_DATE = "2022-June-11"
+const VERSION = "0.4.1"
+const BUILD_DATE = "2022-June-15"
 const FLAG_DAYS = "-days="
 const FLAG_JSON = "-json"
 const FLAG_NO_COLOR = "-no-color"

@@ -44,9 +44,7 @@ func CheckServer(target string, dateNeededValidFor time.Time, insecure bool) (ou
 	output.Target = target
 	output.Passed = true
 
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure},
-	}
+	tr := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure}, ForceAttemptHTTP2: true}
 	client := &http.Client{Transport: tr}
 	response, err := client.Head(target)
 	if err != nil {
@@ -69,6 +67,9 @@ func CheckServer(target string, dateNeededValidFor time.Time, insecure bool) (ou
 	output.TlsVersion = response.TLS.Version
 	output.TlsAlgorithm = response.TLS.CipherSuite
 	output.HttpVersion = response.TLS.NegotiatedProtocol
+	if output.HttpVersion == "" {
+		output.HttpVersion = response.Proto
+	}
 
 	for _, val := range response.TLS.PeerCertificates {
 		certInfo := CheckCert{}
@@ -124,11 +125,13 @@ func displayDate(input time.Time) string {
 func (a CheckedServer) AsString(enableColors bool) (output string) {
 	setTerminalColor(enableColors)
 
-	output += fmt.Sprintf("\n%s\n", a.ServerName)
+	if a.ServerInfo != "" && a.HttpVersion != "" && a.TlsAlgorithm > 0 {
+		output += fmt.Sprintf("\n%s\n", a.ServerName)
 
-	output += fmt.Sprintf(" -> %s\n", expandServerNames(a.ServerInfo))
-	output += fmt.Sprintf(" -> %s with %s\n", getHttpVersion(a.HttpVersion), getTlsVersion(a.TlsVersion))
-	output += fmt.Sprintf(" -> %s %s\n", getTlsAlgo(a.TlsAlgorithm), getMozillaRecommendedCipher(a.TlsAlgorithm))
+		output += fmt.Sprintf(" -> %s\n", expandServerNames(a.ServerInfo))
+		output += fmt.Sprintf(" -> %s with %s\n", getHttpVersion(a.HttpVersion), getTlsVersion(a.TlsVersion))
+		output += fmt.Sprintf(" -> %s %s\n", getTlsAlgo(a.TlsAlgorithm), getMozillaRecommendedCipher(a.TlsAlgorithm))
+	}
 
 	for i, cert := range a.Certs {
 
@@ -242,7 +245,7 @@ func getTlsAlgo(input uint16) string {
 
 func getHttpVersion(input string) string {
 
-	switch input {
+	switch strings.ToLower(input) {
 	case "h3":
 		return "HTTP/3" // currently, go cannot do http3 natively
 	case "h2":
@@ -252,7 +255,7 @@ func getHttpVersion(input string) string {
 	case "http/1":
 		return terminalRed + "HTTP/1 (OLD)" + terminalNoColor
 	}
-	return fmt.Sprintf("unknown HTTPS version: %s", input)
+	return fmt.Sprintf("unknown HTTPS version %s", input)
 
 }
 
