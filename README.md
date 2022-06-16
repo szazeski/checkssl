@@ -22,9 +22,15 @@ steve.zazeski.com
 
 If the certificate is not valid, a non-zero exit code will be returned to stop a ci build. 
 ```
-zazeski.com
- certificate signed by unknown authority
-[FAIL] zazeski.com
+expired.badssl.com
+ -> nginx/1.10.3 (Ubuntu) - 
+ -> HTTP/1.1 (OLD) with TLS v1.2 (released 2008) - Consider upgrading to TLS v1.3
+ -> TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 
+ 1) *.badssl.com expired on 2015-04-12 11:59PM Sun (-2621.0 days)
+ CA-2) COMODO RSA Domain Validation Secure Server CA expires on 2029-02-11 11:59PM Sun (2433.0 days)
+ CA-3) COMODO RSA Certification Authority expired on 2020-05-30 10:48AM Sat (-746.6 days)
+https://expired.badssl.com x509: certificate has expired or is not yet valid: current time 2022-06-15T19:48:19-05:00 is after 2015-04-12T23:59:59Z
+[FAIL] https://expired.badssl.com
 ```
 
 ```
@@ -52,7 +58,7 @@ ebay.com
 ## Installation
 
 On 64-bit linux systems, you can run
-`wget https://github.com/szazeski/checkssl/releases/download/v0.4.0/checkssl-linux-amd64 && chmod +x checkssl-linux-amd64 && sudo mv checkssl-linux-amd64 /usr/bin/checkssl`
+`wget https://github.com/szazeski/checkssl/releases/download/v0.4.1/checkssl-linux-amd64 && chmod +x checkssl-linux-amd64 && sudo mv checkssl-linux-amd64 /usr/bin/checkssl`
 (will ask for a sudo password to move it into the system-wide bin folder, switch it to a local path if you don't want to do that)
 
 ---
@@ -60,17 +66,17 @@ On 64-bit linux systems, you can run
 On Mac you can use macports with `sudo port install checkssl`
 
 On Intel Macs, open terminal
-`curl -O -L https://github.com/szazeski/checkssl/releases/download/v0.4.0/checkssl-darwin-intel && chmod +x checkssl-darwin-intel`
+`curl -O -L https://github.com/szazeski/checkssl/releases/download/v0.4.1/checkssl-darwin-intel && chmod +x checkssl-darwin-intel`
 Since the app is not signed, you should open it here by right clicking on it and clicking open to tell Gatekeeper that you approve running it.
 `mv checkssl-darwin-intel /usr/local/bin/checkssl`
 
 On Apple Silicon, open terminal
-`curl -O -L https://github.com/szazeski/checkssl/releases/download/v0.4.0/checkssl-darwin-m1 && chmod +x checkssl-darwin-m1`
+`curl -O -L https://github.com/szazeski/checkssl/releases/download/v0.4.1/checkssl-darwin-m1 && chmod +x checkssl-darwin-m1`
 Since the app is not signed, you should open it here by right clicking on it and clicking open to tell Gatekeeper that you approve running it.
 `mv checkssl-darwin-m1 /usr/local/bin/checkssl`
 
 ---
 
 On windows (powershell)
-`wget https://github.com/szazeski/checkssl/releases/download/v0.4.0/checkssl-windows-amd64.exe -outfile checkssl.exe`
+`wget https://github.com/szazeski/checkssl/releases/download/v0.4.1/checkssl-windows-amd64.exe -outfile checkssl.exe`
 then move to C:\Windows\checkssl.exe
