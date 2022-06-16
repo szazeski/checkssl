@@ -49,11 +49,14 @@ ebay.com
 `-no-color` will not add terminal color syntax to output, helpful for CI systems that do not have color enabled.
 
 ### Return Codes
+
 `0` All certificates passed
 
-`2` Certificate(s) expired
+`2` Certificate(s) are expired
 
-`3` User specified threshold failed 
+`3` Certificate(s) are valid now but user specified threshold failed (from -days flag)
+
+`4` Certificate(s) are not yet valid
 
 ## Installation
 
