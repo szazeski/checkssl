@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
+	"net/http/httptrace"
 	"strings"
 	"time"
 )
@@ -26,6 +28,7 @@ type CheckedServer struct {
 	TlsVersion   uint16
 	TlsAlgorithm uint16
 	ServerName   string
+	IpAddress    string
 }
 type CheckCert struct {
 	CommonName             string
@@ -45,8 +48,24 @@ func CheckServer(target string, dateNeededValidFor time.Time, insecure bool) (ou
 	output.Passed = true
 
 	tr := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure}, ForceAttemptHTTP2: true}
+
+	trace := &httptrace.ClientTrace{
+		GotConn: func(connInfo httptrace.GotConnInfo) {
+			ip, _, _ := net.SplitHostPort(connInfo.Conn.RemoteAddr().String())
+			output.IpAddress = ip
+		},
+	}
+
+	req, err := http.NewRequest("HEAD", target, nil)
+	if err != nil {
+		output.Err = err.Error()
+		return
+	}
+
+	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
+
 	client := &http.Client{Transport: tr}
-	response, err := client.Head(target)
+	response, err := client.Do(req)
 	if err != nil {
 		if insecure == false {
 			output = CheckServer(target, dateNeededValidFor, true)
@@ -125,8 +144,8 @@ func displayDate(input time.Time) string {
 func (a CheckedServer) AsString(enableColors bool) (output string) {
 	setTerminalColor(enableColors)
 
-	if a.ServerInfo != "" && a.HttpVersion != "" && a.TlsAlgorithm > 0 {
-		output += fmt.Sprintf("\n%s\n", a.ServerName)
+	if a.HttpVersion != "" && a.TlsAlgorithm > 0 {
+		output += fmt.Sprintf("\n%s => %s\n", a.ServerName, a.IpAddress)
 
 		output += fmt.Sprintf(" -> %s\n", expandServerNames(a.ServerInfo))
 		output += fmt.Sprintf(" -> %s with %s\n", getHttpVersion(a.HttpVersion), getTlsVersion(a.TlsVersion))
