@@ -5,7 +5,7 @@ package="github.com/szazeski/checkssl"
 package_split=(${package//\// })
 package_name="checkssl"
 
-platforms=("windows/amd64" "windows/386" "windows/arm" "darwin/amd64" "darwin/arm64" "linux/amd64" "linux/386" "linux/arm64" "linux/arm")
+platforms=("windows/amd64" "windows/386" "windows/arm64" "darwin/amd64" "darwin/arm64" "linux/amd64" "linux/386" "linux/arm64" "linux/arm")
 
 #  go tool dist list | column -c 75 | column -t
 #aix/ppc64        freebsd/amd64   linux/mipsle   openbsd/386
