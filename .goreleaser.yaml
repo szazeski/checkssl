@@ -1,0 +1,63 @@
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - 386
+      - amd64
+      - arm64
+
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+
+checksum:
+  name_template: 'checksums.txt'
+
+brews:
+  - name: checkssl
+
+    tap:
+      owner: szazeski
+      name: checkssl-homebrew-tap
+      branch: main
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+
+    url_template: "https://github.com/<repo_owner>/<repo_name>/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+
+    commit_author:
+      name: goreleaserbot
+      email: goreleaser@zazeski.com
+
+    # The project name and current git tag are used in the format string.
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
+
+    # Folder inside the repository to put the formula.
+    # Default is the root folder.
+    folder: Formula
+
+    homepage: "https://www.checkssl.org/"
+    description: "Simple tool to check or monitor TLS/SSL certificates are working."
+    license: "MIT"
+
+    skip_upload: "true"
+
+    dependencies:
+      - name: git
+      - name: go
+
+    test: |
+      system "#{bin}/checkssl checkssl.org"
+      ...
