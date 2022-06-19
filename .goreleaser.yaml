@@ -52,8 +52,6 @@ brews:
     description: "Simple tool to check or monitor TLS/SSL certificates are working."
     license: "MIT"
 
-    skip_upload: "true"
-
     dependencies:
       - name: git
       - name: go
