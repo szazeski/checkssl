@@ -144,10 +144,14 @@ func displayDate(input time.Time) string {
 func (a CheckedServer) AsString(enableColors bool) (output string) {
 	setTerminalColor(enableColors)
 
-	if a.HttpVersion != "" && a.TlsAlgorithm > 0 {
-		output += fmt.Sprintf("\n%s => %s\n", a.ServerName, a.IpAddress)
+	output += fmt.Sprintf("\n%s => %s\n", a.ServerName, a.IpAddress)
 
-		output += fmt.Sprintf(" -> %s\n", expandServerNames(a.ServerInfo))
+	if a.HttpVersion != "" && a.TlsAlgorithm > 0 {
+		if a.ServerInfo == "" {
+			output += fmt.Sprintf(" -> (no server name or versions found)\n")
+		} else {
+			output += fmt.Sprintf(" -> %s\n", expandServerNames(a.ServerInfo))
+		}
 		output += fmt.Sprintf(" -> %s with %s\n", getHttpVersion(a.HttpVersion), getTlsVersion(a.TlsVersion))
 		output += fmt.Sprintf(" -> %s %s\n", getTlsAlgo(a.TlsAlgorithm), getMozillaRecommendedCipher(a.TlsAlgorithm))
 	}
