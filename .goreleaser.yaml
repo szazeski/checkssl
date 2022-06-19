@@ -31,11 +31,11 @@ brews:
 
     tap:
       owner: szazeski
-      name: checkssl-homebrew-tap
+      name: homebrew-tap
       branch: main
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
 
-    url_template: "https://github.com/<repo_owner>/<repo_name>/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    url_template: "https://github.com/szazeski/checkssl/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
 
     commit_author:
       name: goreleaserbot
@@ -52,10 +52,5 @@ brews:
     description: "Simple tool to check or monitor TLS/SSL certificates are working."
     license: "MIT"
 
-    dependencies:
-      - name: git
-      - name: go
-
     test: |
       system "#{bin}/checkssl checkssl.org"
-      ...
