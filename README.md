@@ -65,20 +65,18 @@ For Linux/Mac:
 wget https://github.com/szazeski/checkssl/releases/download/v0.4.3/checkssl_0.4.3_$(uname -s)_$(uname -m).tar.gz -O checkssl.tar.gz && tar -xf checkssl.tar.gz && chmod +x checkssl && sudo mv checkssl /usr/bin/
 ```
 
----
+### Mac
 
-On Mac you can use macports with `sudo port install checkssl`
+[macports](https://ports.macports.org/port/checkssl/) `sudo port install checkssl`
 
----
 
-On Mac you can use homebrew with `brew tap szazeski/tap` then `brew install szazeski/tap/checkssl`
+[homebrew](https://brew.sh/) `brew install szazeski/tap/checkssl`
 
----
 
-On Windows (with powershell)
+### Windows (Powershell)
 
 ```
 wget https://github.com/szazeski/checkssl/releases/download/v0.4.1/checkssl-windows-amd64.exe -outfile checkssl.exe
 ```
 
-then move to C:\Windows\ or other PATH directory
+then move to `C:\Windows\` or other PATH directory
