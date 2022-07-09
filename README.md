@@ -76,7 +76,7 @@ wget https://github.com/szazeski/checkssl/releases/download/v0.4.3/checkssl_0.4.
 ### Windows (Powershell)
 
 ```
-wget https://github.com/szazeski/checkssl/releases/download/v0.4.1/checkssl-windows-amd64.exe -outfile checkssl.exe
+Invoke-WebRequest https://github.com/szazeski/checkssl/releases/download/v0.4.3/checkssl_0.4.3_Windows_x86_64.tar.gz -outfile checkssl.tar.gz; tar -xzf checkssl.tar.gz; echo "if you want, move the file to a PATH directory like WINDOWS folder"
 ```
 
 then move to `C:\Windows\` or other PATH directory
