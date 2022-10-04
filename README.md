@@ -62,7 +62,7 @@ ebay.com
 
 For Linux/Mac:
 ```
-wget https://github.com/szazeski/checkssl/releases/download/v0.4.3/checkssl_0.4.3_$(uname -s)_$(uname -m).tar.gz -O checkssl.tar.gz && tar -xf checkssl.tar.gz && chmod +x checkssl && sudo mv checkssl /usr/bin/
+wget https://github.com/szazeski/checkssl/releases/download/v0.4.4/checkssl_0.4.4_$(uname -s)_$(uname -m).tar.gz -O checkssl.tar.gz && tar -xf checkssl.tar.gz && chmod +x checkssl && sudo mv checkssl /usr/bin/
 ```
 
 ### Mac
@@ -76,7 +76,7 @@ wget https://github.com/szazeski/checkssl/releases/download/v0.4.3/checkssl_0.4.
 ### Windows (Powershell)
 
 ```
-Invoke-WebRequest https://github.com/szazeski/checkssl/releases/download/v0.4.3/checkssl_0.4.3_Windows_x86_64.tar.gz -outfile checkssl.tar.gz; tar -xzf checkssl.tar.gz; echo "if you want, move the file to a PATH directory like WINDOWS folder"
+Invoke-WebRequest https://github.com/szazeski/checkssl/releases/download/v0.4.4/checkssl_0.4.4_Windows_x86_64.tar.gz -outfile checkssl.tar.gz; tar -xzf checkssl.tar.gz; echo "if you want, move the file to a PATH directory like WINDOWS folder"
 ```
 
 then move to `C:\Windows\` or other PATH directory
