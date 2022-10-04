@@ -82,37 +82,43 @@ func CheckServer(target string, dateNeededValidFor time.Time, insecure bool) (ou
 		output.ServerInfo += " - "
 	}
 	output.ServerInfo += response.Header.Get("x-powered-by")
-	output.ServerName = response.TLS.ServerName
-	output.TlsVersion = response.TLS.Version
-	output.TlsAlgorithm = response.TLS.CipherSuite
-	output.HttpVersion = response.TLS.NegotiatedProtocol
 	if output.HttpVersion == "" {
 		output.HttpVersion = response.Proto
 	}
 
-	for _, val := range response.TLS.PeerCertificates {
-		certInfo := CheckCert{}
-		certInfo.IsCertificateAuthority = val.IsCA
-		certInfo.ValidNotAfter = val.NotAfter
-		certInfo.ValidNotBefore = val.NotBefore
+	if response.TLS != nil {
+		output.ServerName = response.TLS.ServerName
+		output.TlsVersion = response.TLS.Version
+		output.TlsAlgorithm = response.TLS.CipherSuite
+		output.HttpVersion = response.TLS.NegotiatedProtocol
 
-		commonName := val.Subject.CommonName
-		if commonName == "" {
-			commonName = "(missing common name)"
-		}
-		certInfo.CommonName = commonName
-		if output.ServerName == "" {
-			output.ServerName = commonName
-		}
+		for _, val := range response.TLS.PeerCertificates {
+			certInfo := CheckCert{}
+			certInfo.IsCertificateAuthority = val.IsCA
+			certInfo.ValidNotAfter = val.NotAfter
+			certInfo.ValidNotBefore = val.NotBefore
 
-		newCode := checkIfExpirationIsWithinTolerance(dateNeededValidFor, val.NotBefore, val.NotAfter)
-		if newCode > RETURNCODE_PASS {
-			certInfo.IsInvalid = true
-			output.ExitCode = newCode
-			output.Passed = false
-		}
-		output.Certs = append(output.Certs, certInfo)
+			commonName := val.Subject.CommonName
+			if commonName == "" {
+				commonName = "(missing common name)"
+			}
+			certInfo.CommonName = commonName
+			if output.ServerName == "" {
+				output.ServerName = commonName
+			}
 
+			newCode := checkIfExpirationIsWithinTolerance(dateNeededValidFor, val.NotBefore, val.NotAfter)
+			if newCode > RETURNCODE_PASS {
+				certInfo.IsInvalid = true
+				output.ExitCode = newCode
+				output.Passed = false
+			}
+			output.Certs = append(output.Certs, certInfo)
+
+		}
+	} else {
+		output.Passed = false
+		output.Err = "Missing TLS Connection"
 	}
 
 	return
