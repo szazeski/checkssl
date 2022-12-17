@@ -5,6 +5,8 @@ command line tool to check if a webserver has a valid https certificate.
 
 https://www.checkssl.org/
 
+<a rel="me" href="https://fosstodon.org/@checkssl">Follow us on Mastodon</a>
+
 ## Example
 
 `checkssl steve.zazeski.com`
