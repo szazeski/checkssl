@@ -9,7 +9,7 @@ import (
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	dateThreshold := time.Now()
-	result := checkssl.CheckServer(request.QueryStringParameters["target"], dateThreshold)
+	result := checkssl.CheckServer(request.QueryStringParameters["target"], dateThreshold, false)
 
 	headers := map[string]string{"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET,OPTIONS", "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token"}
 
