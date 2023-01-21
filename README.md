@@ -62,10 +62,14 @@ ebay.com
 
 ## Installation
 
-For Linux/Mac:
+### Linux/Mac
 ```
 wget https://github.com/szazeski/checkssl/releases/download/v0.4.4/checkssl_0.4.4_$(uname -s)_$(uname -m).tar.gz -O checkssl.tar.gz && tar -xf checkssl.tar.gz && chmod +x checkssl && sudo mv checkssl /usr/bin/
 ```
+
+### Docker
+`docker run --rm szazeski/checkssl hub.docker.com`
+[Dockerhub](https://hub.docker.com/r/szazeski/checkssl)
 
 ### Mac
 
