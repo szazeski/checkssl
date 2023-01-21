@@ -68,13 +68,11 @@ wget https://github.com/szazeski/checkssl/releases/download/v0.4.4/checkssl_0.4.
 ```
 
 ### Docker
-`docker run --rm szazeski/checkssl hub.docker.com`
-[Dockerhub](https://hub.docker.com/r/szazeski/checkssl)
+[Dockerhub](https://hub.docker.com/r/szazeski/checkssl) `docker run --rm szazeski/checkssl hub.docker.com`
 
 ### Mac
 
 [macports](https://ports.macports.org/port/checkssl/) `sudo port install checkssl`
-
 
 [homebrew](https://brew.sh/) `brew install szazeski/tap/checkssl`
 
