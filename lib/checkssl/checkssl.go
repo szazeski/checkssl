@@ -67,7 +67,7 @@ func CheckServer(target string, dateNeededValidFor time.Time, insecure bool) (ou
 	client := &http.Client{Transport: tr}
 	response, err := client.Do(req)
 	if err != nil {
-		if insecure == false {
+		if !insecure {
 			output = CheckServer(target, dateNeededValidFor, true)
 		}
 		certError := errors.Unwrap(err)
@@ -114,7 +114,6 @@ func CheckServer(target string, dateNeededValidFor time.Time, insecure bool) (ou
 				output.Passed = false
 			}
 			output.Certs = append(output.Certs, certInfo)
-
 		}
 	} else {
 		output.Passed = false
@@ -125,7 +124,6 @@ func CheckServer(target string, dateNeededValidFor time.Time, insecure bool) (ou
 }
 
 func checkIfExpirationIsWithinTolerance(dateThreshold time.Time, notBefore time.Time, notAfter time.Time) int {
-
 	if dateThreshold.After(notBefore) && dateThreshold.Before(notAfter) {
 		return RETURNCODE_PASS
 	}
@@ -154,7 +152,7 @@ func (a CheckedServer) AsString(enableColors bool) (output string) {
 
 	if a.HttpVersion != "" && a.TlsAlgorithm > 0 {
 		if a.ServerInfo == "" {
-			output += fmt.Sprintf(" -> (no server name or versions found)\n")
+			output += " -> (no server name or versions found)\n"
 		} else {
 			output += fmt.Sprintf(" -> %s\n", expandServerNames(a.ServerInfo))
 		}
@@ -175,7 +173,7 @@ func (a CheckedServer) AsString(enableColors bool) (output string) {
 		} else {
 			output += fmt.Sprintf("%s expires on %s", cert.CommonName, displayDate(cert.ValidNotAfter))
 		}
-		output += fmt.Sprintf("\n")
+		output += "\n"
 	}
 
 	if a.Passed {
