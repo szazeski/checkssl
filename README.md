@@ -48,6 +48,8 @@ ebay.com
 
 `-json` will switch the text output from human-readable to JSON format for easier parsing with other systems.
 
+`-csv` will switch the text output to comma seperated values that are easier to copy and paste into a spreadsheet.
+
 `-no-color` will not add terminal color syntax to output, helpful for CI systems that do not have color enabled.
 
 ### Return Codes
@@ -64,7 +66,7 @@ ebay.com
 
 ### Linux/Mac
 ```
-wget https://github.com/szazeski/checkssl/releases/download/v0.4.4/checkssl_0.4.4_$(uname -s)_$(uname -m).tar.gz -O checkssl.tar.gz && tar -xf checkssl.tar.gz && chmod +x checkssl && sudo mv checkssl /usr/bin/
+wget https://github.com/szazeski/checkssl/releases/download/v0.5.0/checkssl_0.5.0_$(uname -s)_$(uname -m).tar.gz -O checkssl.tar.gz && tar -xf checkssl.tar.gz && chmod +x checkssl && sudo mv checkssl /usr/bin/
 ```
 
 ### Docker
@@ -80,7 +82,7 @@ wget https://github.com/szazeski/checkssl/releases/download/v0.4.4/checkssl_0.4.
 ### Windows (Powershell)
 
 ```
-Invoke-WebRequest https://github.com/szazeski/checkssl/releases/download/v0.4.4/checkssl_0.4.4_Windows_x86_64.tar.gz -outfile checkssl.tar.gz; tar -xzf checkssl.tar.gz; echo "if you want, move the file to a PATH directory like WINDOWS folder"
+Invoke-WebRequest https://github.com/szazeski/checkssl/releases/download/v0.4.4/checkssl_0.5.0_Windows_x86_64.tar.gz -outfile checkssl.tar.gz; tar -xzf checkssl.tar.gz; echo "if you want, move the file to a PATH directory like WINDOWS folder"
 ```
 
 then move to `C:\Windows\` or other PATH directory

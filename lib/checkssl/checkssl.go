@@ -12,10 +12,14 @@ import (
 	"time"
 )
 
-const RETURNCODE_PASS = 0
-const RETURNCODE_EXPIRED = 2
-const RETURNCODE_THRESHOLDFAIL = 3
-const RETURNCODE_NOTVALIDYET = 4
+const (
+	RETURNCODE_PASS          = 0
+	RETURNCODE_EXPIRED       = 2
+	RETURNCODE_THRESHOLDFAIL = 3
+	RETURNCODE_NOTVALIDYET   = 4
+
+	dateLayout = "2006-01-02 3:04PM Mon"
+)
 
 type CheckedServer struct {
 	Target       string
@@ -140,9 +144,17 @@ func checkIfExpirationIsWithinTolerance(dateThreshold time.Time, notBefore time.
 }
 
 func displayDate(input time.Time) string {
-	numberOfDays := fmt.Sprintf("%.1f", input.Sub(time.Now()).Hours()/24)
 	//	Mon Jan 2 15:04:05 -0700 MST 2006
-	return input.Format("2006-01-02 3:04PM Mon") + " (" + numberOfDays + " days)"
+	return input.Format(dateLayout) + " (" + numberOfDays(input) + " days)"
+}
+func numberOfDays(input time.Time) string {
+	if input.IsZero() {
+		return ""
+	}
+	return fmt.Sprintf("%.1f", input.Sub(time.Now()).Hours()/24)
+}
+func durationDays(before time.Time, after time.Time) string {
+	return fmt.Sprintf("%.1f", after.Sub(before).Hours()/24)
 }
 
 func (a CheckedServer) AsString(enableColors bool) (output string) {
@@ -192,6 +204,37 @@ func (a CheckedServer) AsJson() string {
 		return "{ \"error\": \"Unable to convert result to json\"}"
 	}
 	return string(jsonBytes)
+}
+
+func CsvHeaderRow() string {
+	return "Target,Result,Days to Expire,Duration,Common Name,CA Name,Error"
+}
+func (a CheckedServer) AsCsv() string {
+	var leastDays time.Time
+	duration := ""
+	commonName := ""
+	caName := ""
+	for i, cert := range a.Certs {
+		if leastDays.After(cert.ValidNotAfter) || leastDays.IsZero() {
+			leastDays = cert.ValidNotAfter
+		}
+		if i == 0 {
+			commonName = cert.CommonName
+			duration = durationDays(cert.ValidNotBefore, cert.ValidNotAfter)
+		}
+		if cert.IsCertificateAuthority {
+			caName = cert.CommonName
+		}
+	}
+	return strings.Join([]string{a.Target, csvConvertResult(a.ExitCode), numberOfDays(leastDays), duration, commonName, caName, a.Err}, ",")
+}
+func csvConvertResult(input int) string {
+	if input == 0 {
+		return "PASS"
+	} else if input == RETURNCODE_EXPIRED {
+		return "EXPIRED"
+	}
+	return "FAIL"
 }
 
 var terminalNoColor = ""
