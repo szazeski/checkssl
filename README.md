@@ -62,6 +62,8 @@ ebay.com
 
 `4` Certificate(s) are not yet valid
 
+`5` General error, normally due to network failure
+
 ## Installation
 
 ### Linux/Mac

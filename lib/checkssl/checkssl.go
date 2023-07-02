@@ -17,6 +17,7 @@ const (
 	RETURNCODE_EXPIRED       = 2
 	RETURNCODE_THRESHOLDFAIL = 3
 	RETURNCODE_NOTVALIDYET   = 4
+	RETURNCODE_ERROR         = 5
 
 	dateLayout = "2006-01-02 3:04PM Mon"
 )
@@ -77,7 +78,7 @@ func CheckServer(target string, dateNeededValidFor time.Time, insecure bool) (ou
 		certError := errors.Unwrap(err)
 		output.Err = certError.Error()
 		output.Passed = false
-		output.ExitCode = RETURNCODE_EXPIRED
+		output.ExitCode = RETURNCODE_ERROR
 		return
 	}
 
