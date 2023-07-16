@@ -8,17 +8,20 @@ WORKDIR "/go/src/github.com/szazeski/checkssl"
 #COPY go.sum .
 #RUN go mod download
 
-COPY * ./
+COPY . .
 
 RUN go build -o /checkssl
 
 ## Deploy
 FROM alpine:latest
 MAINTAINER steve@checkssl.org
-LABEL build_date="2022-10-03"
-LABEL built_version="0.4.4"
+LABEL build_date="2023-07-03"
+LABEL built_version="0.5.0"
 
 WORKDIR /
 COPY --from=builder /checkssl /checkssl
 
 ENTRYPOINT ["/checkssl"]
+
+
+# docker buildx build --platform linux/arm/v7,linux/arm64,linux/amd64 --tag szazeski/checkssl:0.5.0 --tag szazeski/checkssl:latest -push .
