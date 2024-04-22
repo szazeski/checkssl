@@ -190,6 +190,24 @@ func generateRealisticResult() CheckedServer {
 	}
 }
 
+func Test_getAllDnsRecordsFor(t *testing.T) {
+	actual := getAllDnsRecordsFor("www.checkssl.org")
+
+	if len(actual) != 4 {
+		t.Log(actual)
+		t.Error("did not get the expected 4 A records")
+	}
+}
+
+func Test_getAllDnsRecordsFor_Invalid(t *testing.T) {
+	actual := getAllDnsRecordsFor("www.checkssl.org.invalid")
+
+	if len(actual) != 0 {
+		t.Log(actual)
+		t.Error("did not get the expected 0 A records")
+	}
+}
+
 // = = = = = = =
 
 func assert(t *testing.T, actual string, expected string, failureHint string) {

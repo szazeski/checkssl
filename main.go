@@ -11,20 +11,21 @@ import (
 )
 
 const (
-	VERSION       = "0.5.0"
-	BUILD_DATE    = "2023-Jul-03"
-	FLAG_DAYS     = "-days="
-	FLAG_JSON     = "-json"
-	FLAG_CSV      = "-csv"
-	FLAG_NO_COLOR = "-no-color"
+	VERSION        = "0.5.1"
+	BUILD_DATE     = "2024-Apr-21"
+	FLAG_DAYS      = "-days="
+	FLAG_JSON      = "-json"
+	FLAG_CSV       = "-csv"
+	FLAG_NO_COLOR  = "-no-color"
+	FLAG_NO_OUTPUT = "-no-output"
+	FLAG_SHORT     = "-short"
 )
 
 var (
 	returnCode          = 0
 	dateThreshold       time.Time
-	outputAsJson        = false
-	outputAsCsv         = false
 	enableTerminalColor = true
+	outputFormat        = checkssl.TEXT
 )
 
 func main() {
@@ -33,19 +34,21 @@ func main() {
 		displayHelpText("")
 	}
 
-	if outputAsCsv && !outputAsJson {
+	if outputFormat == checkssl.CSV {
 		fmt.Println(checkssl.CsvHeaderRow())
 	}
 
 	for i := range arguments {
 		result := checkssl.CheckServer(arguments[i], dateThreshold, false)
 		returnCode += result.ExitCode
-		if outputAsJson {
+		if outputFormat == checkssl.JSON {
 			fmt.Println(result.AsJson())
-		} else if outputAsCsv {
+		} else if outputFormat == checkssl.CSV {
 			fmt.Println(result.AsCsv())
-		} else {
+		} else if outputFormat == checkssl.TEXT {
 			fmt.Println(result.AsString(enableTerminalColor))
+		} else if outputFormat == checkssl.SHORT {
+			fmt.Print(result.AsShortString(enableTerminalColor))
 		}
 	}
 	os.Exit(returnCode)
@@ -73,10 +76,16 @@ func separateCommandLineArgumentsFromFlags() []string {
 				dateThreshold = time.Now().Add(offset)
 			}
 			if strings.HasPrefix(value, FLAG_JSON) {
-				outputAsJson = true
+				outputFormat = checkssl.JSON
 			}
 			if strings.HasPrefix(value, FLAG_CSV) {
-				outputAsCsv = true
+				outputFormat = checkssl.CSV
+			}
+			if strings.HasPrefix(value, FLAG_SHORT) {
+				outputFormat = checkssl.SHORT
+			}
+			if strings.HasPrefix(value, FLAG_NO_OUTPUT) {
+				outputFormat = checkssl.NONE
 			}
 			if strings.HasPrefix(value, FLAG_NO_COLOR) {
 				enableTerminalColor = false
@@ -95,11 +104,13 @@ func displayHelpText(errorText string) {
 		fmt.Println(errorText)
 	}
 
-	fmt.Println("checkssl [url] ")
+	fmt.Println("checkssl [url] [url] [url] ...")
 	fmt.Println(" easy to read/parse information about ssl certificates")
 	fmt.Println(" version " + VERSION + " built " + BUILD_DATE)
 	fmt.Println("  -days=5 (will fail the check if the cert is within 5 days of renewal)")
 	fmt.Println("  -json (will output in JSON format)")
 	fmt.Println("  -csv (will output in comma seperated format for spreadsheets)")
 	fmt.Println("  -no-color (will disable color syntax from output)")
+	fmt.Println("  -no-output (will only produce exit code)")
+	fmt.Println("  -short (will show only 1 line per result)")
 }

@@ -15,8 +15,8 @@ RUN go build -o /checkssl
 ## Deploy
 FROM alpine:latest
 MAINTAINER steve@checkssl.org
-LABEL build_date="2023-07-03"
-LABEL built_version="0.5.0"
+LABEL build_date="2024-04-21"
+LABEL built_version="0.5.1"
 
 WORKDIR /
 COPY --from=builder /checkssl /checkssl

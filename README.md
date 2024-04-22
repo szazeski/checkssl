@@ -52,6 +52,11 @@ ebay.com
 
 `-no-color` will not add terminal color syntax to output, helpful for CI systems that do not have color enabled.
 
+`-no-output` will not show any text but still return a status code. Helpful for CI that just want to know if the certs are valid.
+
+`-short` will reduce each target's output to just the pass/fail line with the url/dns.
+
+
 ### Return Codes
 
 `0` All certificates passed
@@ -68,7 +73,7 @@ ebay.com
 
 ### Linux/Mac
 ```
-wget https://github.com/szazeski/checkssl/releases/download/v0.5.0/checkssl_0.5.0_$(uname -s)_$(uname -m).tar.gz -O checkssl.tar.gz && tar -xf checkssl.tar.gz && chmod +x checkssl && sudo mv checkssl /usr/bin/
+wget https://github.com/szazeski/checkssl/releases/download/v0.5.1/checkssl_0.5.1_$(uname -s)_$(uname -m).tar.gz -O checkssl.tar.gz && tar -xf checkssl.tar.gz && chmod +x checkssl && sudo mv checkssl /usr/bin/
 ```
 
 ### Docker
@@ -84,7 +89,7 @@ wget https://github.com/szazeski/checkssl/releases/download/v0.5.0/checkssl_0.5.
 ### Windows (Powershell)
 
 ```
-Invoke-WebRequest https://github.com/szazeski/checkssl/releases/download/v0.5.0/checkssl_0.5.0_Windows_x86_64.tar.gz -outfile checkssl.tar.gz; tar -xzf checkssl.tar.gz; echo "if you want, move the file to a PATH directory like WINDOWS folder"
+Invoke-WebRequest https://github.com/szazeski/checkssl/releases/download/v0.5.1/checkssl_0.5.1_Windows_x86_64.tar.gz -outfile checkssl.tar.gz; tar -xzf checkssl.tar.gz; echo "if you want, move the file to a PATH directory like WINDOWS folder"
 ```
 
 then move to `C:\Windows\` or other PATH directory

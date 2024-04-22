@@ -189,14 +189,49 @@ func (a CheckedServer) AsString(enableColors bool) (output string) {
 		output += "\n"
 	}
 
+	output += a.summaryLine(output)
+	return
+}
+
+func (a CheckedServer) AsShortString(enableColors bool) (output string) {
+	setTerminalColor(enableColors)
+	output = a.summaryLine(output)
+	return
+}
+
+func (a CheckedServer) summaryLine(output string) string {
 	if a.Passed {
 		output += fmt.Sprintf("%s[PASS]%s %s\n", terminalGreen, terminalNoColor, a.Target)
 	} else {
-		output += fmt.Sprintf("%s %v\n", a.Target, a.Err)
 		output += fmt.Sprintf("%s[FAIL]%s %s\n", terminalRed, terminalNoColor, a.Target)
 	}
+	return output
+}
 
-	return
+type OutputFormat int64
+
+const (
+	JSON OutputFormat = iota
+	CSV
+	TEXT
+	NONE
+	SHORT
+)
+
+func (a OutputFormat) String() string {
+	switch a {
+	case JSON:
+		return "JSON"
+	case CSV:
+		return "CSV"
+	case TEXT:
+		return "TEXT"
+	case NONE:
+		return "NONE"
+	case SHORT:
+		return "SHORT"
+	}
+	return ""
 }
 
 func (a CheckedServer) AsJson() string {
@@ -336,4 +371,21 @@ func expandServerNames(input string) (output string) {
 	output = strings.Replace(output, "gws", "Google Web Server (gws)", 1)
 
 	return
+}
+
+func getAllDnsRecordsFor(input string) []string {
+	output := []string{}
+	addresses, err := net.LookupIP(input)
+	if err != nil {
+		return output
+	}
+
+	for i, ip := range addresses {
+		ipv4 := ip.To4()
+		if ipv4 != nil {
+			fmt.Println(i, ip)
+			output = append(output, ipv4.String())
+		}
+	}
+	return output
 }
