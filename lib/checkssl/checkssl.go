@@ -76,7 +76,9 @@ func CheckServer(target string, dateNeededValidFor time.Time, insecure bool) (ou
 			output = CheckServer(target, dateNeededValidFor, true)
 		}
 		certError := errors.Unwrap(err)
-		output.Err = certError.Error()
+		if certError != nil {
+			output.Err = certError.Error()
+		}
 		output.Passed = false
 		output.ExitCode = RETURNCODE_ERROR
 		return
@@ -189,23 +191,21 @@ func (a CheckedServer) AsString(enableColors bool) (output string) {
 		output += "\n"
 	}
 
-	output += a.summaryLine(output)
+	output += a.summaryLine()
 	return
 }
 
 func (a CheckedServer) AsShortString(enableColors bool) (output string) {
 	setTerminalColor(enableColors)
-	output = a.summaryLine(output)
+	output = a.summaryLine()
 	return
 }
 
-func (a CheckedServer) summaryLine(output string) string {
+func (a CheckedServer) summaryLine() string {
 	if a.Passed {
-		output += fmt.Sprintf("%s[PASS]%s %s\n", terminalGreen, terminalNoColor, a.Target)
-	} else {
-		output += fmt.Sprintf("%s[FAIL]%s %s\n", terminalRed, terminalNoColor, a.Target)
+		return fmt.Sprintf("%s[PASS]%s %s\n", terminalGreen, terminalNoColor, a.Target)
 	}
-	return output
+	return fmt.Sprintf("%s[FAIL]%s %s\n", terminalRed, terminalNoColor, a.Target)
 }
 
 type OutputFormat int64
