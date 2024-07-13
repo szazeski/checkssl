@@ -9,35 +9,38 @@ https://www.checkssl.org/
 
 ## Example
 
-`checkssl steve.zazeski.com`
+`checkssl checkssl.org`
 ```
-steve.zazeski.com
- -> openresty - 
+www.checkssl.org => 2600:9000:24d0:b800:1e:e294:3240:93a1
+ -> AmazonS3 -
  -> HTTP/2 with TLS v1.3 (released 2018) - latest version
- -> TLS_AES_128_GCM_SHA256 = TLS, message encrypted with AES128 GCM, hashes are SHA256 
- 1) steve.zazeski.com expires on 2022-02-13 12:32AM Sun (44.8 days)
- CA-2) R3 expires on 2025-09-15 4:00PM Mon (1355.5 days)
- CA-3) ISRG Root X1 expires on 2035-06-04 11:04AM Mon (4904.3 days)
-[PASS] https://steve.zazeski.com
-
+ -> TLS_AES_128_GCM_SHA256 = TLS, message encrypted with AES128 GCM, hashes are SHA256
+ 1) *.checkssl.org expires on 2025-06-28 11:59PM Sat (350.2 days)
+ CA-2) Amazon RSA 2048 M03 expires on 2030-08-23 10:26PM Fri (2232.1 days)
+ CA-3) Amazon Root CA 1 expires on 2037-12-31 1:00AM Thu (4918.2 days)
+ CA-4) Starfield Services Root Certificate Authority - G2 expires on 2034-06-28 5:39PM Wed (3636.9 days)
+[PASS] https://checkssl.org
 ```
 
 If the certificate is not valid, a non-zero exit code will be returned to stop a ci build. 
+
+`checkssl expired.badssl.com`
 ```
-expired.badssl.com
- -> nginx/1.10.3 (Ubuntu) - 
+expired.badssl.com => 104.154.89.105
+ -> nginx/1.10.3 (Ubuntu) -
  -> HTTP/1.1 (OLD) with TLS v1.2 (released 2008) - Consider upgrading to TLS v1.3
- -> TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 
- 1) *.badssl.com expired on 2015-04-12 11:59PM Sun (-2621.0 days)
- CA-2) COMODO RSA Domain Validation Secure Server CA expires on 2029-02-11 11:59PM Sun (2433.0 days)
- CA-3) COMODO RSA Certification Authority expired on 2020-05-30 10:48AM Sat (-746.6 days)
-https://expired.badssl.com x509: certificate has expired or is not yet valid: current time 2022-06-15T19:48:19-05:00 is after 2015-04-12T23:59:59Z
+ -> TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+ 1) *.badssl.com expired on 2015-04-12 11:59PM Sun (-3379.8 days)
+ CA-2) COMODO RSA Domain Validation Secure Server CA expires on 2029-02-11 11:59PM Sun (1674.2 days)
+ CA-3) COMODO RSA Certification Authority expired on 2020-05-30 10:48AM Sat (-1505.4 days)
+https://expired.badssl.com x509: “*.badssl.com” certificate is expired
 [FAIL] https://expired.badssl.com
 ```
 
+`checkssl ebay.com`
 ```
-ebay.com
- stopped after 10 redirects
+ => 23.11.225.115
+https://ebay.com stopped after 10 redirects
 [FAIL] https://ebay.com
 ```
 
@@ -73,7 +76,7 @@ ebay.com
 
 ### Linux/Mac
 ```
-wget https://github.com/szazeski/checkssl/releases/download/v0.5.1/checkssl_0.5.1_$(uname -s)_$(uname -m).tar.gz -O checkssl.tar.gz && tar -xf checkssl.tar.gz && chmod +x checkssl && sudo mv checkssl /usr/bin/
+wget https://github.com/szazeski/checkssl/releases/download/v0.5.1/checkssl_$(uname -s)_$(uname -m).tar.gz -O checkssl.tar.gz && tar -xf checkssl.tar.gz && chmod +x checkssl && sudo mv checkssl /usr/local/bin/
 ```
 
 ### Docker
@@ -89,7 +92,7 @@ wget https://github.com/szazeski/checkssl/releases/download/v0.5.1/checkssl_0.5.
 ### Windows (Powershell)
 
 ```
-Invoke-WebRequest https://github.com/szazeski/checkssl/releases/download/v0.5.1/checkssl_0.5.1_Windows_x86_64.tar.gz -outfile checkssl.tar.gz; tar -xzf checkssl.tar.gz; echo "if you want, move the file to a PATH directory like WINDOWS folder"
+Invoke-WebRequest https://github.com/szazeski/checkssl/releases/download/v0.5.1/checkssl_Windows_x86_64.tar.gz -outfile checkssl.tar.gz; tar -xzf checkssl.tar.gz; echo "if you want, move the file to a PATH directory like WINDOWS folder"
 ```
 
-then move to `C:\Windows\` or other PATH directory
+then move to `C:\Windows\` or other PATH directory 
