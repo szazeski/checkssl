@@ -19,12 +19,16 @@ const (
 	FLAG_NO_COLOR  = "-no-color"
 	FLAG_NO_OUTPUT = "-no-output"
 	FLAG_SHORT     = "-short"
+	FLAG_NO_HEADER = "-no-header"
+	FLAG_TIMEOUT   = "-timeout="
 )
 
 var (
 	returnCode          = 0
 	dateThreshold       time.Time
 	enableTerminalColor = true
+	enableHeader        = true
+	timeoutSeconds      = checkssl.DEFAULT_TIMEOUT_SEC
 	outputFormat        = checkssl.TEXT
 )
 
@@ -34,12 +38,16 @@ func main() {
 		displayHelpText("")
 	}
 
-	if outputFormat == checkssl.CSV {
+	if outputFormat == checkssl.CSV && enableHeader {
 		fmt.Println(checkssl.CsvHeaderRow())
 	}
 
+	a := checkssl.NewCheckSSL()
+	a.SetThreshold(dateThreshold)
+	a.SetTimeout(timeoutSeconds)
+
 	for i := range arguments {
-		result := checkssl.CheckServer(arguments[i], dateThreshold, false)
+		result := a.CheckServer(arguments[i], false)
 		returnCode += result.ExitCode
 		if outputFormat == checkssl.JSON {
 			fmt.Println(result.AsJson())
@@ -90,6 +98,14 @@ func separateCommandLineArgumentsFromFlags() []string {
 			if strings.HasPrefix(value, FLAG_NO_COLOR) {
 				enableTerminalColor = false
 			}
+			if strings.HasPrefix(value, FLAG_NO_HEADER) {
+				enableHeader = false
+			}
+			if strings.HasPrefix(value, FLAG_TIMEOUT) {
+				parsableTimeout := strings.Replace(value, FLAG_TIMEOUT, "", 1)
+				seconds, _ := strconv.ParseInt(parsableTimeout, 10, 32)
+				timeoutSeconds = int(seconds)
+			}
 			continue
 			// this allows flags to be mixed into the arguments
 		}
@@ -112,5 +128,7 @@ func displayHelpText(errorText string) {
 	fmt.Println("  -csv (will output in comma seperated format for spreadsheets)")
 	fmt.Println("  -no-color (will disable color syntax from output)")
 	fmt.Println("  -no-output (will only produce exit code)")
+	fmt.Println("  -no-header (will disable the header row in CSV output)")
 	fmt.Println("  -short (will show only 1 line per result)")
+	fmt.Println("  -timeout=5 (will set the timeout to 5 seconds)", " default =", checkssl.DEFAULT_TIMEOUT_SEC)
 }

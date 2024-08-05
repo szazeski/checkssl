@@ -7,7 +7,8 @@ import (
 )
 
 func Test_CheckServer_Blank(t *testing.T) {
-	actual := CheckServer("", time.Now(), false)
+	checkssl := NewCheckSSL()
+	actual := checkssl.CheckServer("", false)
 
 	if actual.Passed != false {
 		t.Fatal("no target should of produced a failing response")
@@ -16,7 +17,8 @@ func Test_CheckServer_Blank(t *testing.T) {
 }
 
 func Test_CheckServer_checksslorg(t *testing.T) {
-	actual := CheckServer("checkssl.org", time.Now(), false)
+	checker := NewCheckSSL()
+	actual := checker.CheckServer("checkssl.org", false)
 
 	if !actual.Passed {
 		t.Fatal("expecting to get a passing reply")
@@ -45,7 +47,8 @@ func Test_CheckServer_pinningTest(t *testing.T) {
 	testFailure(t, "https://pinning-test.badssl.com/")
 }
 func testFailure(t *testing.T, target string) {
-	actual := CheckServer(target, time.Now(), false)
+	checker := NewCheckSSL()
+	actual := checker.CheckServer(target, false)
 
 	if actual.Passed {
 		t.Fatal("expecting to get a failure reply")

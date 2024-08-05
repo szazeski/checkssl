@@ -20,6 +20,8 @@ const (
 	RETURNCODE_ERROR         = 5
 
 	dateLayout = "2006-01-02 3:04PM Mon"
+
+	DEFAULT_TIMEOUT_SEC = 15
 )
 
 type CheckedServer struct {
@@ -43,7 +45,25 @@ type CheckCert struct {
 	IsInvalid              bool
 }
 
-func CheckServer(target string, dateNeededValidFor time.Time, insecure bool) (output CheckedServer) {
+type CheckSSL struct {
+	timeoutSeconds     int
+	dateNeededValidFor time.Time
+}
+
+func NewCheckSSL() CheckSSL {
+	return CheckSSL{
+		timeoutSeconds:     DEFAULT_TIMEOUT_SEC,
+		dateNeededValidFor: time.Now(),
+	}
+}
+func (a *CheckSSL) SetTimeout(seconds int) {
+	a.timeoutSeconds = seconds
+}
+func (a *CheckSSL) SetThreshold(threshold time.Time) {
+	a.dateNeededValidFor = threshold
+}
+
+func (a *CheckSSL) CheckServer(target string, insecure bool) (output CheckedServer) {
 	target = strings.Replace(target, "http://", "https://", 1)
 	if !strings.HasPrefix(target, "https://") {
 		target = "https://" + target
@@ -52,13 +72,37 @@ func CheckServer(target string, dateNeededValidFor time.Time, insecure bool) (ou
 	output.Target = target
 	output.Passed = true
 
-	tr := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure}, ForceAttemptHTTP2: true}
+	dialerContext := &net.Dialer{
+		Timeout: time.Duration(a.timeoutSeconds) * time.Second,
+	}
+
+	tr := &http.Transport{
+		TLSClientConfig:   &tls.Config{InsecureSkipVerify: insecure},
+		ForceAttemptHTTP2: true,
+		DialContext:       dialerContext.DialContext,
+	}
 
 	trace := &httptrace.ClientTrace{
 		GotConn: func(connInfo httptrace.GotConnInfo) {
+			// TODO(sz) get a debug logger so people can see these state changes
+			//fmt.Printf("  gotConn %+v", connInfo.Conn)
 			ip, _, _ := net.SplitHostPort(connInfo.Conn.RemoteAddr().String())
 			output.IpAddress = ip
 		},
+		DNSDone: func(dnsInfo httptrace.DNSDoneInfo) {
+			//fmt.Printf("  dnsDone %+v", dnsInfo)
+			if output.IpAddress == "" && len(dnsInfo.Addrs) > 0 {
+				output.IpAddress = dnsInfo.Addrs[0].IP.String()
+			}
+			if dnsInfo.Err != nil {
+				output.Err = dnsInfo.Err.Error()
+				output.Passed = false
+				output.ExitCode = RETURNCODE_ERROR
+			}
+		},
+		//TLSHandshakeDone: func(state tls.ConnectionState, err error) {
+		//	fmt.Println("  tlsHandshakeDone", state, err)
+		//},
 	}
 
 	req, err := http.NewRequest("HEAD", target, nil)
@@ -73,7 +117,10 @@ func CheckServer(target string, dateNeededValidFor time.Time, insecure bool) (ou
 	response, err := client.Do(req)
 	if err != nil {
 		if !insecure {
-			output = CheckServer(target, dateNeededValidFor, true)
+			if !isTimeout(err) {
+				//fmt.Println("  secure request failed, attempting insecure request")
+				output = a.CheckServer(target, true)
+			}
 		}
 		certError := errors.Unwrap(err)
 		if certError != nil {
@@ -114,7 +161,7 @@ func CheckServer(target string, dateNeededValidFor time.Time, insecure bool) (ou
 				output.ServerName = commonName
 			}
 
-			newCode := checkIfExpirationIsWithinTolerance(dateNeededValidFor, val.NotBefore, val.NotAfter)
+			newCode := checkIfExpirationIsWithinTolerance(a.dateNeededValidFor, val.NotBefore, val.NotAfter)
 			if newCode > RETURNCODE_PASS {
 				certInfo.IsInvalid = true
 				output.ExitCode = newCode
@@ -146,6 +193,13 @@ func checkIfExpirationIsWithinTolerance(dateThreshold time.Time, notBefore time.
 	return RETURNCODE_EXPIRED
 }
 
+func isTimeout(err error) bool {
+	if strings.Contains(err.Error(), "i/o timeout") {
+		return true
+	}
+	return false
+}
+
 func displayDate(input time.Time) string {
 	//	Mon Jan 2 15:04:05 -0700 MST 2006
 	return input.Format(dateLayout) + " (" + numberOfDays(input) + " days)"
@@ -163,7 +217,9 @@ func durationDays(before time.Time, after time.Time) string {
 func (a CheckedServer) AsString(enableColors bool) (output string) {
 	setTerminalColor(enableColors)
 
-	output += fmt.Sprintf("\n%s => %s\n", a.ServerName, a.IpAddress)
+	if a.ServerName != "" && a.IpAddress != "" {
+		output += fmt.Sprintf("\n%s => %s\n", a.ServerName, a.IpAddress)
+	}
 
 	if a.HttpVersion != "" && a.TlsAlgorithm > 0 {
 		if a.ServerInfo == "" {
