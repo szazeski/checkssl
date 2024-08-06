@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	VERSION        = "0.5.1"
-	BUILD_DATE     = "2024-Apr-21"
+	VERSION        = "0.6.0"
+	BUILD_DATE     = "2024-Aug-5"
 	FLAG_DAYS      = "-days="
 	FLAG_JSON      = "-json"
 	FLAG_CSV       = "-csv"
