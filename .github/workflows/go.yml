@@ -21,8 +21,11 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Test
+    - name: Go Tests
       run: go test -v ./...
+
+    - name: CLI Tests
+      run: ./cli-test-suite.sh
 
     - uses: actions/upload-artifact@v2
       with:
