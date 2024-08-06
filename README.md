@@ -59,6 +59,10 @@ https://ebay.com stopped after 10 redirects
 
 `-short` will reduce each target's output to just the pass/fail line with the url/dns.
 
+`-no-headers` will remove the csv header line from the output
+
+`-timeout=5` will set the timeout to 5 seconds [default is 15]
+
 
 ### Return Codes
 
@@ -76,7 +80,7 @@ https://ebay.com stopped after 10 redirects
 
 ### Linux/Mac
 ```
-wget https://github.com/szazeski/checkssl/releases/download/v0.5.1/checkssl_$(uname -s)_$(uname -m).tar.gz -O checkssl.tar.gz && tar -xf checkssl.tar.gz && chmod +x checkssl && sudo mv checkssl /usr/local/bin/
+wget https://github.com/szazeski/checkssl/releases/download/v0.6.0/checkssl_$(uname -s)_$(uname -m).tar.gz -O checkssl.tar.gz && tar -xf checkssl.tar.gz && chmod +x checkssl && sudo mv checkssl /usr/local/bin/
 ```
 
 ### Docker
@@ -92,7 +96,7 @@ wget https://github.com/szazeski/checkssl/releases/download/v0.5.1/checkssl_$(un
 ### Windows (Powershell)
 
 ```
-Invoke-WebRequest https://github.com/szazeski/checkssl/releases/download/v0.5.1/checkssl_Windows_x86_64.tar.gz -outfile checkssl.tar.gz; tar -xzf checkssl.tar.gz; echo "if you want, move the file to a PATH directory like WINDOWS folder"
+Invoke-WebRequest https://github.com/szazeski/checkssl/releases/download/v0.6.0/checkssl_Windows_x86_64.tar.gz -outfile checkssl.tar.gz; tar -xzf checkssl.tar.gz; echo "if you want, move the file to a PATH directory like WINDOWS folder"
 ```
 
 then move to `C:\Windows\` or other PATH directory 

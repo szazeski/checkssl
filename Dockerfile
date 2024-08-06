@@ -24,4 +24,5 @@ COPY --from=builder /checkssl /checkssl
 ENTRYPOINT ["/checkssl"]
 
 
-# docker buildx build --platform linux/arm/v7,linux/arm64,linux/amd64 --tag szazeski/checkssl:0.5.0 --tag szazeski/checkssl:latest -push .
+# docker buildx build --platform linux/arm/v7,linux/arm64,linux/amd64 --tag szazeski/checkssl:0.5.1 --tag szazeski/checkssl:latest --push .
+# you may need to do a `docker buildx create --use`
