@@ -1,3 +1,5 @@
+![checkssl preview](https://repository-images.githubusercontent.com/294268324/fb6ec2a7-d004-4915-b754-d1982030878e)
+
 # checkssl
 command line tool to check if a webserver has a valid https certificate.
 
@@ -49,9 +51,9 @@ https://ebay.com stopped after 10 redirects
 
 `-days=60` allows you to specify a threshold of when checkssl should error to allow CI jobs to fail if the certs are about to expire in a few days.
 
-`-json` will switch the text output from human-readable to JSON format for easier parsing with other systems.
+`-json` will switch the output to JSON format for easier parsing with other applications.
 
-`-csv` will switch the text output to comma seperated values that are easier to copy and paste into a spreadsheet.
+`-csv` will switch the output to comma seperated values that are easier to use with a spreadsheet.
 
 `-no-color` will not add terminal color syntax to output, helpful for CI systems that do not have color enabled.
 
@@ -59,7 +61,7 @@ https://ebay.com stopped after 10 redirects
 
 `-short` will reduce each target's output to just the pass/fail line with the url/dns.
 
-`-no-headers` will remove the csv header line from the output
+`-no-header` will remove the csv header line from the output
 
 `-timeout=5` will set the timeout to 5 seconds [default is 15]
 
