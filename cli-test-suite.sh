@@ -13,6 +13,7 @@ function passtest() {
 
 echo "cli-test-suite.sh"
 echo "  This suite tests functionality of the locally built ./checkssl"
+echo ""
 
 if [ ! -f ./checkssl ]; then
     echo "  ./checkssl does not exist, attempting to build one"
@@ -21,19 +22,24 @@ if [ ! -f ./checkssl ]; then
         echo "  ./checkssl still does not exist, [FAIL] test"
         exit 1
     fi
+else
+  echo "reusing locally built checkssl"
+  ls -al | grep checkssl
+  echo ""
 fi
 
 OUTPUT=$(./checkssl)
 EXPECTED=$(cat <<-END
 checkssl [url] [url] [url] ...
  easy to read/parse information about ssl certificates
- version 0.6.0 built 2024-Aug-5
+ version 1.0.0 built 2026-Oct-6
   -days=5 (will fail the check if the cert is within 5 days of renewal)
   -json (will output in JSON format)
   -csv (will output in comma seperated format for spreadsheets)
   -no-color (will disable color syntax from output)
-  -no-output (will only produce exit code)
+  -no-follow (will not follow redirects)
   -no-header (will disable the header row in CSV output)
+  -no-output (will only produce exit code)
   -short (will show only 1 line per result)
   -timeout=5 (will set the timeout to 5 seconds)  default = 15
 END

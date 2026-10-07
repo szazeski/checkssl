@@ -11,15 +11,16 @@ import (
 )
 
 const (
-	VERSION        = "0.6.0"
-	BUILD_DATE     = "2024-Aug-5"
+	VERSION        = "1.0.0"
+	BUILD_DATE     = "2026-Oct-6"
 	FLAG_DAYS      = "-days="
 	FLAG_JSON      = "-json"
 	FLAG_CSV       = "-csv"
 	FLAG_NO_COLOR  = "-no-color"
+	FLAG_NO_FOLLOW = "-no-follow"
+	FLAG_NO_HEADER = "-no-header"
 	FLAG_NO_OUTPUT = "-no-output"
 	FLAG_SHORT     = "-short"
-	FLAG_NO_HEADER = "-no-header"
 	FLAG_TIMEOUT   = "-timeout="
 )
 
@@ -30,6 +31,7 @@ var (
 	enableHeader        = true
 	timeoutSeconds      = checkssl.DEFAULT_TIMEOUT_SEC
 	outputFormat        = checkssl.TEXT
+	followRedirects     = true
 )
 
 func main() {
@@ -45,6 +47,7 @@ func main() {
 	a := checkssl.NewCheckSSL()
 	a.SetThreshold(dateThreshold)
 	a.SetTimeout(timeoutSeconds)
+	a.SetFollowBehavior(followRedirects)
 
 	for i := range arguments {
 		result := a.CheckServer(arguments[i], false)
@@ -92,14 +95,17 @@ func separateCommandLineArgumentsFromFlags() []string {
 			if strings.HasPrefix(value, FLAG_SHORT) {
 				outputFormat = checkssl.SHORT
 			}
-			if strings.HasPrefix(value, FLAG_NO_OUTPUT) {
+			if value == FLAG_NO_OUTPUT {
 				outputFormat = checkssl.NONE
 			}
-			if strings.HasPrefix(value, FLAG_NO_COLOR) {
+			if value == FLAG_NO_COLOR {
 				enableTerminalColor = false
 			}
-			if strings.HasPrefix(value, FLAG_NO_HEADER) {
+			if value == FLAG_NO_HEADER {
 				enableHeader = false
+			}
+			if value == FLAG_NO_FOLLOW {
+				followRedirects = false
 			}
 			if strings.HasPrefix(value, FLAG_TIMEOUT) {
 				parsableTimeout := strings.Replace(value, FLAG_TIMEOUT, "", 1)
@@ -127,8 +133,9 @@ func displayHelpText(errorText string) {
 	fmt.Println("  -json (will output in JSON format)")
 	fmt.Println("  -csv (will output in comma seperated format for spreadsheets)")
 	fmt.Println("  -no-color (will disable color syntax from output)")
-	fmt.Println("  -no-output (will only produce exit code)")
+	fmt.Println("  -no-follow (will not follow redirects)")
 	fmt.Println("  -no-header (will disable the header row in CSV output)")
+	fmt.Println("  -no-output (will only produce exit code)")
 	fmt.Println("  -short (will show only 1 line per result)")
 	fmt.Println("  -timeout=5 (will set the timeout to 5 seconds)", " default =", checkssl.DEFAULT_TIMEOUT_SEC)
 }
