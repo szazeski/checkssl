@@ -1,3 +1,3 @@
 module github.com/szazeski/checkssl
 
-go 1.17
+go 1.27

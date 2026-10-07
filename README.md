@@ -63,6 +63,8 @@ https://ebay.com stopped after 10 redirects
 
 `-no-header` will remove the csv header line from the output
 
+`-no-follow` will not follow HTTP redirects
+
 `-timeout=5` will set the timeout to 5 seconds [default is 15]
 
 

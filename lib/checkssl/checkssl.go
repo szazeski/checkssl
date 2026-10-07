@@ -26,6 +26,8 @@ const (
 
 type CheckedServer struct {
 	Target       string
+	RedirectTo   string
+	Followed     bool
 	Err          string
 	ExitCode     int
 	ServerInfo   string
@@ -48,12 +50,14 @@ type CheckCert struct {
 type CheckSSL struct {
 	timeoutSeconds     int
 	dateNeededValidFor time.Time
+	followRedirects    bool
 }
 
 func NewCheckSSL() CheckSSL {
 	return CheckSSL{
 		timeoutSeconds:     DEFAULT_TIMEOUT_SEC,
 		dateNeededValidFor: time.Now(),
+		followRedirects:    true,
 	}
 }
 func (a *CheckSSL) SetTimeout(seconds int) {
@@ -61,6 +65,9 @@ func (a *CheckSSL) SetTimeout(seconds int) {
 }
 func (a *CheckSSL) SetThreshold(threshold time.Time) {
 	a.dateNeededValidFor = threshold
+}
+func (a *CheckSSL) SetFollowBehavior(follow bool) {
+	a.followRedirects = follow
 }
 
 func (a *CheckSSL) CheckServer(target string, insecure bool) (output CheckedServer) {
@@ -114,6 +121,16 @@ func (a *CheckSSL) CheckServer(target string, insecure bool) (output CheckedServ
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
 
 	client := &http.Client{Transport: tr}
+
+	output.Followed = a.followRedirects
+	client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		output.RedirectTo = req.URL.String()
+		if !a.followRedirects {
+			return http.ErrUseLastResponse
+		}
+		return nil
+	}
+
 	response, err := client.Do(req)
 	if err != nil {
 		if !insecure {
@@ -217,8 +234,18 @@ func durationDays(before time.Time, after time.Time) string {
 func (a CheckedServer) AsString(enableColors bool) (output string) {
 	setTerminalColor(enableColors)
 
+	output += "\n"
+
+	if a.RedirectTo != "" {
+		output += fmt.Sprintf("Redirects to %s", a.RedirectTo)
+		if !a.Followed {
+			output += " but not following"
+		}
+		output += "\n"
+	}
+
 	if a.ServerName != "" && a.IpAddress != "" {
-		output += fmt.Sprintf("\n%s => %s\n", a.ServerName, a.IpAddress)
+		output += fmt.Sprintf("%s => %s\n", a.ServerName, a.IpAddress)
 	}
 
 	if a.HttpVersion != "" && a.TlsAlgorithm > 0 {

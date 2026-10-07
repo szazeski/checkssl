@@ -1,10 +1,50 @@
 package checkssl
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
 )
+
+func Test_CheckServer_FollowRedirects(t *testing.T) {
+	targetServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Server", "TargetServer")
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer targetServer.Close()
+
+	redirectServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Server", "RedirectServer")
+		http.Redirect(w, r, targetServer.URL, http.StatusMovedPermanently)
+	}))
+	defer redirectServer.Close()
+
+	// With followRedirects = true (default)
+	checkerFollow := NewCheckSSL()
+	resFollow := checkerFollow.CheckServer(redirectServer.URL, true)
+	if !resFollow.Passed {
+		t.Fatalf("expected follow to pass: %v", resFollow.Err)
+	}
+	if !strings.Contains(resFollow.ServerInfo, "TargetServer") {
+		t.Errorf("expected ServerInfo to contain TargetServer when following redirect, got %s", resFollow.ServerInfo)
+	}
+
+	// With followRedirects = false
+	checkerNoFollow := NewCheckSSL()
+	checkerNoFollow.SetFollowBehavior(false)
+	resNoFollow := checkerNoFollow.CheckServer(redirectServer.URL, true)
+	if !resNoFollow.Passed {
+		t.Fatalf("expected no-follow to pass: %v", resNoFollow.Err)
+	}
+	if strings.Contains(resNoFollow.ServerInfo, "TargetServer") {
+		t.Errorf("expected ServerInfo not to contain TargetServer when not following redirect, got %s", resNoFollow.ServerInfo)
+	}
+	if !strings.Contains(resNoFollow.ServerInfo, "RedirectServer") {
+		t.Errorf("expected ServerInfo to contain RedirectServer when not following redirect, got %s", resNoFollow.ServerInfo)
+	}
+}
 
 func Test_CheckServer_Blank(t *testing.T) {
 	checkssl := NewCheckSSL()
