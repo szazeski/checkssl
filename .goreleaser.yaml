@@ -1,4 +1,4 @@
-
+version: 2
 before:
   hooks:
     - go mod tidy
@@ -30,12 +30,13 @@ archives:
 
     format_overrides:
       - goos: windows
-        format: zip
+        formats:
+          - zip
 
 brews:
   - name: checkssl
 
-    tap:
+    repository:
       owner: szazeski
       name: homebrew-tap
       branch: main
@@ -51,7 +52,7 @@ brews:
 
     # Folder inside the repository to put the formula.
     # Default is the root folder.
-    folder: Formula
+    directory: Formula
 
     homepage: "https://www.checkssl.org/"
     description: "Simple tool to check or monitor TLS/SSL certificates are working."
@@ -59,3 +60,48 @@ brews:
 
     test: |
       system "#{bin}/checkssl checkssl.org"
+
+dockers:
+  - image_templates:
+      - "szazeski/checkssl:{{ .Version }}-amd64"
+      - "szazeski/checkssl:{{ .Tag }}-amd64"
+      - "szazeski/checkssl:latest-amd64"
+    dockerfile: Dockerfile
+    use: docker
+    build_flag_templates:
+      - "--platform=linux/amd64"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+    goos: linux
+    goarch: amd64
+
+  - image_templates:
+      - "szazeski/checkssl:{{ .Version }}-arm64"
+      - "szazeski/checkssl:{{ .Tag }}-arm64"
+      - "szazeski/checkssl:latest-arm64"
+    dockerfile: Dockerfile
+    use: docker
+    build_flag_templates:
+      - "--platform=linux/arm64"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+    goos: linux
+    goarch: arm64
+
+docker_manifests:
+  - name_template: "szazeski/checkssl:{{ .Version }}"
+    image_templates:
+      - "szazeski/checkssl:{{ .Version }}-amd64"
+      - "szazeski/checkssl:{{ .Version }}-arm64"
+  - name_template: "szazeski/checkssl:{{ .Tag }}"
+    image_templates:
+      - "szazeski/checkssl:{{ .Tag }}-amd64"
+      - "szazeski/checkssl:{{ .Tag }}-arm64"
+  - name_template: "szazeski/checkssl:latest"
+    image_templates:
+      - "szazeski/checkssl:latest-amd64"
+      - "szazeski/checkssl:latest-arm64"
