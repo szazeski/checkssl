@@ -1,0 +1,4 @@
+FROM gcr.io/distroless/static-debian12:nonroot
+COPY checkssl /checkssl
+USER nonroot:nonroot
+ENTRYPOINT ["/checkssl"]

@@ -66,7 +66,7 @@ dockers:
       - "szazeski/checkssl:{{ .Version }}-amd64"
       - "szazeski/checkssl:{{ .Tag }}-amd64"
       - "szazeski/checkssl:latest-amd64"
-    dockerfile: Dockerfile
+    dockerfile: Dockerfile.goreleaser
     use: docker
     build_flag_templates:
       - "--platform=linux/amd64"
@@ -81,7 +81,7 @@ dockers:
       - "szazeski/checkssl:{{ .Version }}-arm64"
       - "szazeski/checkssl:{{ .Tag }}-arm64"
       - "szazeski/checkssl:latest-arm64"
-    dockerfile: Dockerfile
+    dockerfile: Dockerfile.goreleaser
     use: docker
     build_flag_templates:
       - "--platform=linux/arm64"
